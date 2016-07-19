@@ -25,6 +25,11 @@
 	</repositories>
 
 	<dependencies>
+		
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+		</dependency>
 	
 		<dependency>
 			<groupId>org.slf4j</groupId>
