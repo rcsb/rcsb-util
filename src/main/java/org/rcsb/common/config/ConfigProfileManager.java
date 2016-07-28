@@ -26,6 +26,15 @@ public class ConfigProfileManager {
 
     public static final String CONFIG_PROFILE_PROPERTY = "rcsbConfigProfile";
 
+    /**
+     * The config file for the connection to the primary pdb database.
+     */
+	public static final String PDB_DB_CONFIG_FILENAME      = "pdb.database.properties";
+	
+	/**
+	 * The config file for the connection to the primary uniprot database.
+	 */
+	public static final String UNIPROT_DB_CONFIG_FILENAME  = "uniprot.database.properties";
 
     
     private static File profilePath;
@@ -95,6 +104,24 @@ public class ConfigProfileManager {
 
         return propstream;
     	
+    }
+    
+    /**
+     * Get the {@value #PDB_DB_CONFIG_FILENAME} config file for configuration of connection to primary pdb database.
+     * The config file is searched in the config profile directory set through system property {@value CONFIG_PROFILE_PROPERTY}
+     * @return
+     */
+    public static InputStream getPdbDbProperties() {
+    	return getPropertiesStream(PDB_DB_CONFIG_FILENAME);
+    }
+    
+    /**
+     * Get the {@value #UNIPROT_DB_CONFIG_FILENAME} config file for configuration of connection to primary uniprot database.
+     * The config file is searched in the config profile directory set through system property {@value CONFIG_PROFILE_PROPERTY} 
+     * @return
+     */
+    public static InputStream getUniprotDbProperties() {
+    	return getPropertiesStream(UNIPROT_DB_CONFIG_FILENAME);
     }
 
 }
