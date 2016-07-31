@@ -11,7 +11,7 @@
 
 	<artifactId>rcsb-util</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0-SNAPSHOT</version>
+	<version>1.0.0-SNAPSHOT</version>
 	<name>RCSB utils</name>
 
 
