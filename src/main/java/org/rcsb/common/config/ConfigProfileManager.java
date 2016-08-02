@@ -11,6 +11,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Properties;
 
 /**
  * A manager of config profiles to be specified through system property {@value CONFIG_PROFILE_PROPERTY}.
@@ -121,13 +122,14 @@ public class ConfigProfileManager {
     }
 
     /**
-     * Returns an InputStream to a properties file with given name in the config profile URL directory.
+     * Returns a Properties object by reading the given propertiesFileName from config profile URL directory specified in {@value CONFIG_PROFILE_PROPERTY}.
      * @param propertiesFileName
      * @return
      */
-    private static InputStream getPropertiesStream(String propertiesFileName) {
-        InputStream propstream = null;
+    private static Properties getPropertiesObject(String propertiesFileName) {
 
+    	Properties props = null;
+    	
         URL profileUrl = ConfigProfileManager.getProfileUrl();
         if (profileUrl!=null) {
             URL f = null;
@@ -141,12 +143,13 @@ public class ConfigProfileManager {
 
             if (urlExists(f)) {
                 try {
-                    propstream = f.openStream();
+                	InputStream propstream = f.openStream();
+                	props = new Properties();
+                	props.load(propstream);
                     LOGGER.info("Reading properties file {}", f.toString());
 
                 } catch (IOException e) {
-                    // this shouldn't happen because we checked for existence first
-                	String msg = "Something is wrong! URL "+f.toString()+" reported as existing but openStream could not open it!";
+                	String msg = "Something went wrong reading file from URL "+f.toString()+", although the file was reported as existing";
                     LOGGER.error(msg);
                     throw new RuntimeException(msg);
                 }
@@ -158,8 +161,7 @@ public class ConfigProfileManager {
 
         }
         
-
-        return propstream;
+        return props;
     	
     }
     
@@ -168,8 +170,8 @@ public class ConfigProfileManager {
      * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY}
      * @return
      */
-    public static InputStream getPdbDbProperties() {
-    	return getPropertiesStream(PDB_DB_CONFIG_FILENAME);
+    public static Properties getPdbDbProperties() {
+    	return getPropertiesObject(PDB_DB_CONFIG_FILENAME);
     }
     
     /**
@@ -177,8 +179,8 @@ public class ConfigProfileManager {
      * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY} 
      * @return
      */
-    public static InputStream getUniprotDbProperties() {
-    	return getPropertiesStream(UNIPROT_DB_CONFIG_FILENAME);
+    public static Properties getUniprotDbProperties() {
+    	return getPropertiesObject(UNIPROT_DB_CONFIG_FILENAME);
     }
 
     /**
@@ -186,8 +188,8 @@ public class ConfigProfileManager {
      * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY} 
      * @return
      */
-    public static InputStream getYosemiteAppProperties() {
-    	return getPropertiesStream(YOSEMITE_APP_CONFIG_FILENAME);
+    public static Properties getYosemiteAppProperties() {
+    	return getPropertiesObject(YOSEMITE_APP_CONFIG_FILENAME);
     }
 
 }
