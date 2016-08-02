@@ -166,7 +166,7 @@ public class ConfigProfileManager {
     }
     
     /**
-     * Get the {@value #PDB_DB_CONFIG_FILENAME} config file for configuration of connection to primary pdb database.
+     * Gets the Properties object corresponding to the {@value #PDB_DB_CONFIG_FILENAME} config file for configuration of connection to primary pdb database.
      * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY}
      * @return
      */
@@ -175,7 +175,7 @@ public class ConfigProfileManager {
     }
     
     /**
-     * Get the {@value #UNIPROT_DB_CONFIG_FILENAME} config file for configuration of connection to primary uniprot database.
+     * Gets the Properties object corresponding to the {@value #UNIPROT_DB_CONFIG_FILENAME} config file for configuration of connection to primary uniprot database.
      * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY} 
      * @return
      */
@@ -184,7 +184,7 @@ public class ConfigProfileManager {
     }
 
     /**
-     * Get the {@value #YOSEMITE_APP_CONFIG_FILENAME} config file for configuration of the yosemite app.
+     * Gets the Properties object corresponding to the {@value #YOSEMITE_APP_CONFIG_FILENAME} config file for configuration of the yosemite app.
      * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY} 
      * @return
      */
