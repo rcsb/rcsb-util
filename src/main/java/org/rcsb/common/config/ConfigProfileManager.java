@@ -46,7 +46,7 @@ public class ConfigProfileManager {
 	public static final String YOSEMITE_APP_CONFIG_FILENAME = "yosemite.app.properties";
 
     /**
-     * The config file for the yosemite app
+     * The config file for the redwood app
      */
     public static final String REDWOOD_APP_CONFIG_FILENAME = "redwood.app.properties";
 	
@@ -198,7 +198,7 @@ public class ConfigProfileManager {
     }
 
     /**
-     * Gets the Properties object corresponding to the {@value #YOSEMITE_APP_CONFIG_FILENAME} config file for configuration of the yosemite app.
+     * Gets the Properties object corresponding to the {@value #REDWOOD_APP_CONFIG_FILENAME} config file for configuration of the redwood app.
      * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY}
      * @return
      */
