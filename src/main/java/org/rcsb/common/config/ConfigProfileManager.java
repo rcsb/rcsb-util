@@ -11,7 +11,13 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
+
 import java.util.Properties;
+
 
 /**
  * A manager of config profiles to be specified through system property {@value CONFIG_PROFILE_PROPERTY}.
@@ -178,6 +184,26 @@ public class ConfigProfileManager {
         
         return props;
     	
+    }
+    
+    /**
+     * Converts a Properties object into a Map. Useful for interfacing with JPA (which needs properties as a Map).
+     * Example usage:
+     * <pre>
+     * Properties props = ConfigProfileManager.getSequoiaAppProperties();
+     * Persistence.createEntityManagerFactory("myjpa", ConfigProfileManager.getMapFromProperties(props));
+     * </pre>
+     * @param props the properties
+     * @return
+     */
+    public static Map<String,String> getMapFromProperties(Properties props) {
+    	Map<String,String> map = new HashMap<>();
+    	
+    	for (Entry<Object, Object> entry : props.entrySet()) {
+    		map.put((String) entry.getKey(), (String) entry.getValue());
+    	}
+    	
+    	return map;
     }
     
     /**
