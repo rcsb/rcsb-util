@@ -1,0 +1,25 @@
+variables:
+  #FILENAME: "${CI_BUILD_REF_NAME}_${CI_BUILD_REF}_pdb.war"
+
+stages:
+  - build
+
+build:
+  stage: build
+  script:
+#    Handy for debugging
+    - pwd
+    - mvn -v
+#    Build via maven
+    - mvn --batch-mode --errors -U clean package
+#    See results (size)
+    - cd target
+    - ls -alh *.war
+#    Rename file to have match branch + commit tag
+    #- echo "We will rename [pdb.war] to [${FILENAME}]"
+    #- mv pdb.war ${FILENAME}
+    #- ls -alh *.war
+#    Send file to build locker
+    #- sshpass -p 3ffd8b48e7ed9f sftp transporter@bl-receive.rcsb.org:1-receive <<< $"put ${FILENAME}"
+  tags:
+    - Java
