@@ -4,14 +4,13 @@
 	<parent>
 		<groupId>org.rcsb</groupId>
 		<artifactId>rcsb-common</artifactId>
-		<version>0.0.2-SNAPSHOT</version>
+		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>rcsb-util</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.1-SNAPSHOT</version>
 	<name>RCSB utils</name>
 
 
