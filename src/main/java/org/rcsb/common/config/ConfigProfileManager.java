@@ -67,6 +67,11 @@ public class ConfigProfileManager {
     public static final String SEQUOIA_APP_CONFIG_FILENAME = "sequoia.app.properties";
 
     /**
+     * The filename of the build properties. Each project should produce it in the maven config.
+     */
+    public static final String BUILD_PROPERTIES_FILENAME = "about.properties";
+    
+    /**
      * The profile URL, can be also in a locally mounted file system if prefixed with file://
      */
     private static URL profileUrl;
@@ -111,7 +116,7 @@ public class ConfigProfileManager {
     			File file = new File(url.toURI());
     			return file.exists();
     		} catch (URISyntaxException e) {
-    			LOGGER.warn("Something went wrong while converting UL '{}' to file. Considering that URL doesn't exist", url.toString());
+    			LOGGER.warn("Something went wrong while converting URL '{}' to file. Considering that URL doesn't exist", url.toString());
     			return false;
     		}
     	} else {
@@ -151,7 +156,7 @@ public class ConfigProfileManager {
 
     	Properties props = null;
     	
-        URL profileUrl = ConfigProfileManager.getProfileUrl();
+        URL profileUrl = getProfileUrl();
         if (profileUrl!=null) {
             URL f = null;
             try {
@@ -260,4 +265,19 @@ public class ConfigProfileManager {
         return getPropertiesObject(SEQUOIA_APP_CONFIG_FILENAME);
     }
 
+    /**
+     * Get the build properties from file {@value #BUILD_PROPERTIES_FILENAME} placed at the root of the resources dir.
+     * The file should contain project.version, build.hash and build.timestamp variables populated by maven at buildtime. 
+     * @return
+     */
+    public static Properties getBuildProperties() {
+    	InputStream propstream = Thread.currentThread().getContextClassLoader().getResourceAsStream("/"+BUILD_PROPERTIES_FILENAME);    	
+    	Properties props = new Properties();
+    	try {
+    		props.load(propstream);
+    	} catch (IOException e) {
+    		LOGGER.warn("Could not get the build properties from {} file! Build information will not be available.", BUILD_PROPERTIES_FILENAME);
+    	}
+        return props;
+    }
 }
