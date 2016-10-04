@@ -271,7 +271,7 @@ public class ConfigProfileManager {
      * @return
      */
     public static Properties getBuildProperties() {
-    	InputStream propstream = Thread.currentThread().getContextClassLoader().getResourceAsStream("/"+BUILD_PROPERTIES_FILENAME);    	
+    	InputStream propstream = Thread.currentThread().getContextClassLoader().getResourceAsStream(BUILD_PROPERTIES_FILENAME);    	
     	Properties props = new Properties();
     	try {
     		props.load(propstream);
