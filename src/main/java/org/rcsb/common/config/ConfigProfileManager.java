@@ -266,7 +266,7 @@ public class ConfigProfileManager {
     }
 
     /**
-     * Get the build properties from file {@value #BUILD_PROPERTIES_FILENAME} placed at the root of the resources dir.
+     * Gets the build properties from file {@value #BUILD_PROPERTIES_FILENAME} placed at the root of the resources dir.
      * The file should contain project.version, build.hash and build.timestamp variables populated by maven at buildtime. 
      * @return
      */
