@@ -1,6 +1,7 @@
 package org.rcsb.common.io;
 
 import java.io.*;
+import java.net.URL;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -129,5 +130,27 @@ public class FileUtils {
 
       return visitor.getAllFilesMap();
    }
+
+
+    /** Downloads a file from a remote location and writes it locally
+     *
+     * @param remoteURL
+     * @param localFile
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
+    public static  void downloadFileFromRemote(URL remoteURL, File localFile) throws FileNotFoundException, IOException{
+
+        FileOutputStream out = new FileOutputStream(localFile);
+
+        InputStream in = remoteURL.openStream();
+        byte[] buf = new byte[4 * 1024]; // 4K buffer
+        int bytesRead;
+        while ((bytesRead = in.read(buf)) != -1) {
+            out.write(buf, 0, bytesRead);
+        }
+        in.close();
+        out.close();
+    }
 
 }
