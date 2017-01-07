@@ -19,6 +19,7 @@ public class CommonUtils {
 
 
     public static  int getNrThreads(){
+
         Properties props = ConfigProfileManager.getSequoiaAppProperties();
 
         String t = (String) props.get("sequoia.threads");
@@ -39,6 +40,15 @@ public class CommonUtils {
 
         return threads;
     }
+
+
+    public static  int getNrThreadsRuntime(){
+
+        int availableProcs = Runtime.getRuntime().availableProcessors();
+
+        return availableProcs;
+    }
+
 
 
     /** read all PDB IDs from the local.pdb.list file
