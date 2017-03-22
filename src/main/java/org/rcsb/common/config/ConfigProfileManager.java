@@ -70,7 +70,16 @@ public class ConfigProfileManager {
      * The filename of the build properties. Each project should produce it in the maven config.
      */
     public static final String BUILD_PROPERTIES_FILENAME = "about.properties";
-    
+
+
+    /**
+     * The pdb.properties file that is used by the legacy PDB Webapp (usually in /pdb/pdbinabox/pdb.properties
+     */
+
+    public static final String PDB_PROPERTIES_FILENAME = "pdb.properties";
+
+
+
     /**
      * The profile URL, can be also in a locally mounted file system if prefixed with file://
      */
@@ -264,6 +273,14 @@ public class ConfigProfileManager {
     public static Properties getSequoiaAppProperties() {
         return getPropertiesObject(SEQUOIA_APP_CONFIG_FILENAME);
     }
+
+
+    /** Gets the content of a pdb.properties file as it gets used by the legacy PDB webapp
+     *
+     * @return
+     */
+    public static Properties getLegacyPdbProperties() { return getPropertiesObject(PDB_PROPERTIES_FILENAME);}
+
 
     /**
      * Gets the build properties from file {@value #BUILD_PROPERTIES_FILENAME} placed at the root of the resources dir.
