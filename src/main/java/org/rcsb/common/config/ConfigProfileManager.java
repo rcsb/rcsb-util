@@ -57,6 +57,11 @@ public class ConfigProfileManager {
     public static final String REDWOOD_APP_CONFIG_FILENAME = "redwood.app.properties";
 
     /**
+     * The config file for the arches app
+     */
+    public static final String ARCHES_APP_CONFIG_FILENAME = "arches.app.properties";
+
+    /**
      * The config file for the tahoe app
      */
     public static final String TAHOE_APP_CONFIG_FILENAME = "tahoe.app.properties";
@@ -254,6 +259,15 @@ public class ConfigProfileManager {
      */
     public static Properties getRedwoodAppProperties() {
         return getPropertiesObject(REDWOOD_APP_CONFIG_FILENAME);
+    }
+
+    /**
+     * Gets the Properties object corresponding to the {@value #TAHOE_APP_CONFIG_FILENAME} config file for configuration of the tahoe app.
+     * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY}
+     * @return
+     */
+    public static Properties getArchesAppProperties() {
+        return getPropertiesObject(ARCHES_APP_CONFIG_FILENAME);
     }
 
     /**
