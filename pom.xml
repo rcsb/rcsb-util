@@ -31,6 +31,21 @@
 		</repository>
 	</repositories>
 
+	<distributionManagement>
+		<downloadUrl>http://nexus.rcsb.org/nexus/content/repositories/releases/</downloadUrl>
+		<repository>
+			<id>releases</id>
+			<name>RCSB PDB Maven Repository</name>
+			<url>http://nexus.rcsb.org/nexus/content/repositories/releases</url>
+
+		</repository>
+		<snapshotRepository>
+			<id>snapshots</id>
+			<url>http://nexus.rcsb.org/nexus/content/repositories/snapshots</url>
+			<uniqueVersion>false</uniqueVersion>
+		</snapshotRepository>
+	</distributionManagement>
+
 	<dependencies>
 		
 		<dependency>
