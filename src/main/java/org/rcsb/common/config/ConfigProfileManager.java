@@ -76,51 +76,12 @@ public class ConfigProfileManager {
      */
     public static final String BUILD_PROPERTIES_FILENAME = "about.properties";
 
-
     /**
      * The pdb.properties file that is used by the legacy PDB Webapp (usually in /pdb/pdbinabox/pdb.properties
      */
 
     public static final String PDB_PROPERTIES_FILENAME = "pdb.properties";
 
-
-
-    /**
-     * The profile URL, can be also in a locally mounted file system if prefixed with file://
-     */
-    private static URL profileUrl;
-
-    static {
-        String profile = System.getProperty(CONFIG_PROFILE_PROPERTY);
-
-        if (profile == null || profile.equals("")) {
-            LOGGER.error("No {} system property specified with -D{}. ", CONFIG_PROFILE_PROPERTY, CONFIG_PROFILE_PROPERTY);
-            profileUrl = null;
-        } else {
-
-        	try {        		        	
-        		profileUrl = new URL(profile);
-        	} catch (MalformedURLException e) {
-        		LOGGER.error("The URL '{}' specified with {} system property is malformed: {}", profile, CONFIG_PROFILE_PROPERTY, e.getMessage());
-        		profileUrl = null;
-        	}
-
-            if (!urlExists(profileUrl)) {
-                LOGGER.error("The specified profile URL {} is not reachable.", profileUrl.toString());
-                profileUrl = null;
-            } else {
-                LOGGER.info("Valid config profile was read from {} system property. Will load config files from URL {}", CONFIG_PROFILE_PROPERTY, profileUrl.toString());
-
-            }
-        }
-        
-        if (profileUrl==null) {
-        	
-        	LOGGER.error("No valid configuration profile found! Can't continue, exiting JVM!");
-        	System.exit(1);
-        	
-        }
-    }
     
     private static boolean urlExists(URL url) {
 
@@ -158,6 +119,36 @@ public class ConfigProfileManager {
      * @return the path to the profile or null if no profile specified
      */
     public static URL getProfileUrl() {
+        String profile = System.getProperty(CONFIG_PROFILE_PROPERTY);
+        URL profileUrl;
+
+        if (profile == null || profile.equals("")) {
+            LOGGER.error("No {} system property specified with -D{}. ", CONFIG_PROFILE_PROPERTY, CONFIG_PROFILE_PROPERTY);
+            profileUrl = null;
+        } else {
+
+            try {
+                profileUrl = new URL(profile);
+
+                if (!urlExists(profileUrl)) {
+                    LOGGER.error("The specified profile URL {} is not reachable.", profileUrl.toString());
+                    profileUrl = null;
+                } else {
+                    LOGGER.info("Valid config profile was read from {} system property. Will load config files from URL {}", CONFIG_PROFILE_PROPERTY, profileUrl.toString());
+
+                }
+            } catch (MalformedURLException e) {
+                LOGGER.error("The URL '{}' specified with {} system property is malformed: {}", profile, CONFIG_PROFILE_PROPERTY, e.getMessage());
+                profileUrl = null;
+            }
+        }
+
+        if (profileUrl==null) {
+
+            throw new IllegalStateException("No valid configuration profile found! A valid configuration profile must be provided via JVM parameter -D"+CONFIG_PROFILE_PROPERTY);
+
+        }
+
         return profileUrl;
     }
 
