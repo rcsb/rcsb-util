@@ -1,0 +1,29 @@
+{
+  "type":"object",
+  "properties": {
+    "foo": {
+      "required": true,
+      "type": "string"
+    },
+    "bars": {
+      "type": "object",
+      "properties": {
+        "bar": {
+          "type":"string"
+        }
+      }
+    },
+    "boo": {
+      "type": "object",
+      "properties": {
+        "woo": {
+          "required": true,
+          "type": "string"
+        },
+        "hoo": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
