@@ -2,7 +2,6 @@
   "type":"object",
   "properties": {
     "foo": {
-      "required": true,
       "type": "string"
     },
     "bars": {
@@ -15,9 +14,9 @@
     },
     "boo": {
       "type": "object",
+      "required": ["woo"],
       "properties": {
         "woo": {
-          "required": true,
           "type": "string"
         },
         "hoo": {
@@ -25,5 +24,6 @@
         }
       }
     }
-  }
+  },
+  "required": ["foo"]
 }

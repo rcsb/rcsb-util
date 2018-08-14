@@ -11,6 +11,9 @@ import org.jsonschema2pojo.SchemaStore;
 import org.junit.Test;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import static junit.framework.TestCase.assertTrue;
 
@@ -34,16 +37,20 @@ public class CustomRequiredRuleFactoryTest {
         final JCodeModel codeModel = new JCodeModel();
         mapper.generate(codeModel, "MyClass", "com.example", source);
 
-        JDefinedClass clazz = codeModel._getClass("com.example.MyClass");
+        JDefinedClass jclass = codeModel._getClass("com.example.MyClass");
+
+        List<String> requiredFieldMethods = new ArrayList<>();
+        requiredFieldMethods.add("getFoo");
 
         boolean flag = false;
-        for (JMethod m : clazz.methods()) {
-            if (!m.name().equals("getFoo"))
-                continue;
-            for (JAnnotationUse a : m.annotations()) {
-                if (a.getAnnotationClass().name().equals("NotNull")) {
-                    flag = true;
-                    break;
+        for (Iterator<JMethod> methods = jclass.methods().iterator(); methods.hasNext();) {
+            JMethod method = methods.next();
+            if (requiredFieldMethods.contains(method.name())) {
+                for (JAnnotationUse a : method.annotations()) {
+                    if (a.getAnnotationClass().name().equals("NotNull")) {
+                        flag = true;
+                        break;
+                    }
                 }
             }
         }
