@@ -1,5 +1,6 @@
 package org.rcsb.common.jsonschema2pojo.rules;
 
+import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JDocCommentable;
 import org.jsonschema2pojo.Annotator;
 import org.jsonschema2pojo.GenerationConfig;
@@ -38,5 +39,10 @@ public class CustomRequiredRuleFactory extends RuleFactory {
     @Override
     public Rule<JDocCommentable, JDocCommentable> getRequiredRule() {
         return new CustomRequiredRule(this);
+    }
+
+    @Override
+    public Rule<JDefinedClass, JDefinedClass> getRequiredArrayRule() {
+        return new CustomRequiredArrayRule(this);
     }
 }
