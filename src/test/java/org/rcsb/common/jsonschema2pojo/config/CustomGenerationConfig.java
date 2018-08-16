@@ -1,4 +1,4 @@
-package org.rcsb.common.jsonschema2pojo.rules;
+package org.rcsb.common.jsonschema2pojo.config;
 
 import org.jsonschema2pojo.DefaultGenerationConfig;
 
