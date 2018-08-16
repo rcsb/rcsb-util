@@ -2,13 +2,15 @@
   "type":"object",
   "properties": {
     "foo": {
-      "type": "string"
+      "type": "string",
+      "description": "foo is a very common name"
     },
     "bars": {
       "type": "object",
       "properties": {
         "bar": {
-          "type":"string"
+          "type":"string",
+          "description": "bar is deeply nested"
         }
       }
     },
