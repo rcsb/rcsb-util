@@ -13,9 +13,13 @@ import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
 /**
- * Applies the custom "required" schema rule that attach @NotNull annotations to the fields as well as getters/setters.
+ * Applies the custom "required" schema rule that attaches annotations to the fields as well as getters/setters.
  *
- * Created by Yana Valasatava on 8/9/18.
+ * @see <a
+ *  href="https://tools.ietf.org/html/draft-zyp-json-schema-03#section-5.7">https://tools.ietf.org/html/draft-zyp-json-schema-03#section-5.7</a>
+ *
+ * @author Yana Valasatava
+ * @since 1.4.0
  */
 public class CustomRequiredRule implements Rule<JDocCommentable, JDocCommentable> {
 

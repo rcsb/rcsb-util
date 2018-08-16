@@ -5,7 +5,8 @@ import org.jsonschema2pojo.DefaultGenerationConfig;
 /**
  * Overrides the default configuration of jsonschema2pojo tool.
  *
- * Created by Yana Valasatava on 8/10/18.
+ * @author Yana Valasatava
+ * @since 1.4.0
  */
 public class CustomGenerationConfig extends DefaultGenerationConfig {
 

@@ -13,7 +13,13 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Created by Yana Valasatava on 8/13/18.
+ * Applies the "required" JSON schema rule that attaches annotations to the fields as well as getters/setters.
+ *
+ * @see <a
+ *  href="https://tools.ietf.org/html/draft-fge-json-schema-validation-00#section-5.4.3">https://tools.ietf.org/html/draft-fge-json-schema-validation-00#section-5.4.3</a>
+ *
+ * @author Yana Valasatava
+ * @since 1.4.0
  */
 public class CustomRequiredArrayRule implements Rule<JDefinedClass, JDefinedClass> {
 

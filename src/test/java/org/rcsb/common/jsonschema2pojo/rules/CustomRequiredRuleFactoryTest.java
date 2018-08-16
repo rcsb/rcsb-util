@@ -18,9 +18,11 @@ import java.util.List;
 import static junit.framework.TestCase.assertTrue;
 
 /**
+ * Testing generation of required fields annotations using jsonshema2pojo tool
+ * (see {@linktourl http://joelittlejohn.github.io})
  *
- *
- * Created by Yana Valasatava on 8/10/18.
+ * @author Yana Valasatava
+ * @since 1.4.0
  */
 public class CustomRequiredRuleFactoryTest {
 
