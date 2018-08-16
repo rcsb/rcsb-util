@@ -12,7 +12,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Annotates generated Java types using the custom annotations.
+ * Annotates generated Java types using the custom annotations. When used in Maven plugin a fully qualified class name,
+ * referring to this instance, should be passed with <customAnnotator> attribute
+ * See {@linktourl http://joelittlejohn.github.io/jsonschema2pojo/site/0.5.1/generate-mojo.html#customAnnotator}.
  *
  * @author Yana Valasatava
  * @since 1.4.0
