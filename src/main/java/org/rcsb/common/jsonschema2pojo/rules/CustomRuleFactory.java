@@ -9,14 +9,14 @@ import org.jsonschema2pojo.rules.Rule;
 import org.jsonschema2pojo.rules.RuleFactory;
 
 /**
- * Instance of a custom Required Rules used for code generation with jsonshema2pojo tool. When used in Maven plugin
+ * Instance of a Custom Rule Factory used for code generation with jsonshema2pojo tool. When used in Maven plugin
  * a fully qualified class name, referring to this instance, should be passed with <customRuleFactory> attribute
  * See {@linktourl http://joelittlejohn.github.io/jsonschema2pojo/site/0.5.1/generate-mojo.html#customRuleFactory}.
  *
  * @author Yana Valasatava
  * @since 1.4.0
  */
-public class CustomRequiredRuleFactory extends RuleFactory {
+public class CustomRuleFactory extends RuleFactory {
 
     /**
      * Create a new rule factory with the given generation config options.
@@ -31,11 +31,11 @@ public class CustomRequiredRuleFactory extends RuleFactory {
      * @param schemaStore
      *            the object used by this factory to get and store schemas
      */
-    public CustomRequiredRuleFactory(GenerationConfig generationConfig, Annotator annotator, SchemaStore schemaStore) {
+    public CustomRuleFactory(GenerationConfig generationConfig, Annotator annotator, SchemaStore schemaStore) {
         super(generationConfig, annotator, schemaStore);
     }
 
-    public CustomRequiredRuleFactory() {
+    public CustomRuleFactory() {
         super();
     }
 
