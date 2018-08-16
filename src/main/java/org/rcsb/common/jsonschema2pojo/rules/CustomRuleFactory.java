@@ -11,7 +11,8 @@ import org.jsonschema2pojo.rules.RuleFactory;
 /**
  * Instance of a Custom Rule Factory used for code generation with jsonshema2pojo tool. When used in Maven plugin
  * a fully qualified class name, referring to this instance, should be passed with <customRuleFactory> attribute
- * See {@linktourl http://joelittlejohn.github.io/jsonschema2pojo/site/0.5.1/generate-mojo.html#customRuleFactory}.
+ *
+ * See <a href="http://joelittlejohn.github.io/jsonschema2pojo/site/0.5.1/generate-mojo.html#customRuleFactory">jsonschema2pojo documentation</a>.
  *
  * @author Yana Valasatava
  * @since 1.4.0
