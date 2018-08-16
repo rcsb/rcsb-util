@@ -47,6 +47,13 @@
 	</distributionManagement>
 
 	<dependencies>
+
+		<!-- tool to generate DTO style Java classes from JSON schema -->
+		<dependency>
+			<groupId>org.jsonschema2pojo</groupId>
+			<artifactId>jsonschema2pojo-core</artifactId>
+			<version>0.5.1</version>
+		</dependency>
 		
 		<dependency>
 			<groupId>junit</groupId>
