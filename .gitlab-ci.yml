@@ -1,16 +1,15 @@
 stages:
-  - build
+- build
 
 build:
   stage: build
   script:
-#    Handy for debugging
-    - whoami
-    - hostname
-    - pwd
-    - mvn -v
-#    Build via maven
-    - mvn --batch-mode --errors -U clean deploy
+  #    Handy for debugging
+  - whoami
+  - hostname
+  - pwd
+  - mvn -v
+  #    Build via maven
+  - mvn --batch-mode --errors -U clean deploy
   tags:
-    - Java
-
+  - Java8-Nexus3
