@@ -1,109 +1,94 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.rcsb</groupId>
+    <artifactId>rcsb-util</artifactId>
+    <packaging>jar</packaging>
+    <name>RCSB utils</name>
+    <version>1.4.0-SNAPSHOT</version>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.build.targetEncoding>UTF-8</project.build.targetEncoding>
+        <jdk.version>1.8</jdk.version>
+        <slf4j.version>1.7.25</slf4j.version>
+        <log4j.version>2.9.1</log4j.version>
+        <junit.version>4.12</junit.version>
+    </properties>
 
+    <distributionManagement>
+        <downloadUrl>http://nexus3.rcsb.org/repository/rcsb-super-proxy/</downloadUrl>
+        <repository>
+            <id>releases</id>
+            <name>RCSB PDB Maven Repository</name>
+            <url>http://nexus3.rcsb.org/repository/maven-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>snapshots</id>
+            <url>http://nexus3.rcsb.org/repository/maven-snapshots/</url>
+            <uniqueVersion>false</uniqueVersion>
+        </snapshotRepository>
+    </distributionManagement>
 
-	<modelVersion>4.0.0</modelVersion>
+    <scm>
+        <url>https://github.com/rcsb/rcsb-util</url>
+        <connection>scm:git:git://github.com/rcsb/rcsb-util.git</connection>
+    </scm>
 
-	<groupId>org.rcsb</groupId>
-	<artifactId>rcsb-util</artifactId>
-	<packaging>jar</packaging>
-	<name>RCSB utils</name>
-	<version>1.4.0-SNAPSHOT</version>
+    <dependencies>
+        <!-- tool to generate DTO style Java classes from JSON schema -->
+        <dependency>
+            <groupId>org.jsonschema2pojo</groupId>
+            <artifactId>jsonschema2pojo-core</artifactId>
+            <version>0.5.1</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.build.targetEncoding>UTF-8</project.build.targetEncoding>
+        <!-- Binding for Log4J -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>${log4j.version}</version>
+            <!-- runtime scope includes the test scope as well -->
+            <scope>runtime</scope>
+        </dependency>
 
-		<jdk.version>1.8</jdk.version>
-	
-		<slf4j.version>1.7.25</slf4j.version>
-		<log4j.version>2.9.1</log4j.version>
-		<junit.version>4.12</junit.version>
+        <!-- Log4j API and Core implementation required for binding -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>${log4j.version}</version>
+            <!-- runtime scope includes the test scope as well -->
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${log4j.version}</version>
+            <!-- runtime scope includes the test scope as well -->
+            <scope>runtime</scope>
+        </dependency>
+    </dependencies>
 
-	</properties>
-
-	<repositories>
-		<repository>
-			<id>maven2-repository.java.net</id>
-			<name>Java.net Repository for Maven</name>
-			<url>http://download.java.net/maven/2/</url>
-			<layout>default</layout>
-		</repository>
-	</repositories>
-
-	<distributionManagement>
-		<downloadUrl>http://nexus.rcsb.org/nexus/content/repositories/releases/</downloadUrl>
-		<repository>
-			<id>releases</id>
-			<name>RCSB PDB Maven Repository</name>
-			<url>http://nexus.rcsb.org/nexus/content/repositories/releases</url>
-
-		</repository>
-		<snapshotRepository>
-			<id>snapshots</id>
-			<url>http://nexus.rcsb.org/nexus/content/repositories/snapshots</url>
-			<uniqueVersion>false</uniqueVersion>
-		</snapshotRepository>
-	</distributionManagement>
-
-	<dependencies>
-
-		<!-- tool to generate DTO style Java classes from JSON schema -->
-		<dependency>
-			<groupId>org.jsonschema2pojo</groupId>
-			<artifactId>jsonschema2pojo-core</artifactId>
-			<version>0.5.1</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
-			<scope>test</scope>
-		</dependency>
-	
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>${slf4j.version}</version>
-		</dependency>
-		<!-- Binding for Log4J -->
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-slf4j-impl</artifactId>
-			<version>${log4j.version}</version>
-			<!-- runtime scope includes the test scope as well -->
-			<scope>runtime</scope>			
-		</dependency>
-		<!-- Log4j API and Core implementation required for binding -->
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-api</artifactId>
-			<version>${log4j.version}</version>
-			<!-- runtime scope includes the test scope as well -->
-			<scope>runtime</scope>			
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
-			<version>${log4j.version}</version>
-			<!-- runtime scope includes the test scope as well -->
-			<scope>runtime</scope>			
-		</dependency>
-	</dependencies>
-
-	<build>
-
-		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.7.0</version>
-				<configuration>
-					<source>${jdk.version}</source>
-					<target>${jdk.version}</target>
-				</configuration>				
-				
-			</plugin>
-		</plugins>
-	</build>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.7.0</version>
+                <configuration>
+                    <source>${jdk.version}</source>
+                    <target>${jdk.version}</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
