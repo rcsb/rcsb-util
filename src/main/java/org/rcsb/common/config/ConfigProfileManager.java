@@ -51,6 +51,11 @@ public class ConfigProfileManager {
 	 */
 	public static final String YOSEMITE_APP_CONFIG_FILENAME = "yosemite.app.properties";
 
+	/**
+	 * The config file for the borrego app
+	 */
+	public static final String BORREGO_APP_CONFIG_FILENAME = "borrego.app.properties";
+
     /**
      * The config file for the redwood app
      */
@@ -243,6 +248,14 @@ public class ConfigProfileManager {
     	return getPropertiesObject(YOSEMITE_APP_CONFIG_FILENAME);
     }
 
+    /**
+     * Gets the Properties object corresponding to the {@value #YOSEMITE_APP_CONFIG_FILENAME} config file for configuration of the yosemite app.
+     * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY}
+     * @return
+     */
+    public static Properties getBorregoAppProperties() {
+    	return getPropertiesObject(BORREGO_APP_CONFIG_FILENAME);
+    }
     /**
      * Gets the Properties object corresponding to the {@value #REDWOOD_APP_CONFIG_FILENAME} config file for configuration of the redwood app.
      * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY}
