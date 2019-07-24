@@ -51,6 +51,16 @@ public class ConfigProfileManager {
 	 */
 	public static final String YOSEMITE_APP_CONFIG_FILENAME = "yosemite.app.properties";
 
+	/**
+	 * The config file for the borrego app
+	 */
+	public static final String BORREGO_APP_CONFIG_FILENAME = "borrego.app.properties";
+
+    /**
+     * The config file for the shape fast search structure app
+     */
+	public static final String SHAPE_APP_CONFIG_FILENAME = "shape.app.properties";
+
     /**
      * The config file for the redwood app
      */
@@ -244,6 +254,24 @@ public class ConfigProfileManager {
     }
 
     /**
+     * Gets the Properties object corresponding to the {@value #BORREGO_APP_CONFIG_FILENAME} config file for configuration of the borrego app.
+     * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY}
+     * @return
+     */
+    public static Properties getBorregoAppProperties() {
+    	return getPropertiesObject(BORREGO_APP_CONFIG_FILENAME);
+    }
+
+    /**
+     * Gets the Properties object corresponding to the {@value #SHAPE_APP_CONFIG_FILENAME} config file for configuration of the shape app.
+     * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY}
+     * @return
+     */
+    public static Properties getShapeAppProperties() {
+        return getPropertiesObject(SHAPE_APP_CONFIG_FILENAME);
+    }
+
+    /**
      * Gets the Properties object corresponding to the {@value #REDWOOD_APP_CONFIG_FILENAME} config file for configuration of the redwood app.
      * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY}
      * @return
@@ -253,7 +281,7 @@ public class ConfigProfileManager {
     }
 
     /**
-     * Gets the Properties object corresponding to the {@value #TAHOE_APP_CONFIG_FILENAME} config file for configuration of the tahoe app.
+     * Gets the Properties object corresponding to the {@value #ARCHES_APP_CONFIG_FILENAME} config file for configuration of the arches app.
      * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY}
      * @return
      */
@@ -280,7 +308,8 @@ public class ConfigProfileManager {
     }
 
 
-    /** Gets the content of a pdb.properties file as it gets used by the legacy PDB webapp
+    /**
+     * Gets the content of a pdb.properties file as it gets used by the legacy PDB webapp
      *
      * @return
      */
