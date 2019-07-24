@@ -1,9 +1,5 @@
 package org.rcsb.common.loaders;
 
-import org.rcsb.common.config.ConfigProfileManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -14,71 +10,6 @@ import java.util.*;
  * Created by ap3 on 08/11/2016.
  */
 public class CommonUtils {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(CommonUtils.class);
-
-
-    public static  int getNrThreads(){
-
-        Properties props = ConfigProfileManager.getSequoiaAppProperties();
-
-        String t = (String) props.get("sequoia.threads");
-
-        int availableProcs = Runtime.getRuntime().availableProcessors();
-
-        if ( t == null)
-            return availableProcs;
-
-        Integer threads = Integer.parseInt(t);
-
-        if ( threads == null || threads < 1){
-            return availableProcs;
-        }
-
-        else if ( threads > availableProcs)
-            return availableProcs;
-
-        return threads;
-    }
-
-
-    public static  int getNrThreadsRuntime(){
-
-        int availableProcs = Runtime.getRuntime().availableProcessors();
-
-        return availableProcs;
-    }
-
-
-
-    /** read all PDB IDs from the local.pdb.list file
-     *
-     * @return
-     */
-    public static SortedSet<String> getPdbIds(){
-
-        Properties props = ConfigProfileManager.getSequoiaAppProperties();
-
-        String pdbList = (String) props.get("local.pdb.list");
-
-        SortedSet<String> pdbIds = new TreeSet<>();
-        try {
-            File f = new File(pdbList);
-
-            LOGGER.info("reading file " + f.getAbsolutePath());
-
-            pdbIds = readIdsFromFile(f, -1);
-
-        } catch (IOException e) {
-
-            LOGGER.error("Could not read ids from file",e);
-        }
-
-        LOGGER.info("got " + pdbIds.size() + " IDs from file.");
-
-        return pdbIds;
-    }
-
 
     /**
      * Read a file of ids (e.g. pdb ids, or ligand ids). Only the first token (before any spaces) of each line will be read.
