@@ -62,6 +62,11 @@ public class ConfigProfileManager {
 	public static final String SHAPE_APP_CONFIG_FILENAME = "shape.app.properties";
 
     /**
+     * The config file for the text search indexer app
+     */
+    public static final String EVERGLADES_APP_CONFIG_FILENAME = "everglades.app.properties";
+
+    /**
      * The config file for the redwood app
      */
     public static final String REDWOOD_APP_CONFIG_FILENAME = "redwood.app.properties";
@@ -269,6 +274,15 @@ public class ConfigProfileManager {
      */
     public static Properties getShapeAppProperties() {
         return getPropertiesObject(SHAPE_APP_CONFIG_FILENAME);
+    }
+
+    /**
+     * Gets the Properties object corresponding to the {@value #EVERGLADES_APP_CONFIG_FILENAME} config file for configuration of the indexer app.
+     * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY}
+     * @return
+     */
+    public static Properties getEvergladesAppProperties() {
+        return getPropertiesObject(EVERGLADES_APP_CONFIG_FILENAME);
     }
 
     /**
