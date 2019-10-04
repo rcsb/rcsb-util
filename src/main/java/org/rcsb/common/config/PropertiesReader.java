@@ -14,14 +14,22 @@ public class PropertiesReader {
     private String fileName;
     private URL configUrl;
 
-    public PropertiesReader(Properties props, String fileName) {
+    public PropertiesReader(Properties props, String fileName, URL configUrl) {
         this.props = props;
         this.fileName = fileName;
-        this.configUrl = ConfigProfileManager.getProfileUrl();
+        this.configUrl = configUrl;
     }
 
     public Properties getProperties() {
         return props;
+    }
+
+    public URL getConfigUrl() {
+        return configUrl;
+    }
+
+    public String getFileName() {
+        return fileName;
     }
 
     /**
