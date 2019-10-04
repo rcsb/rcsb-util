@@ -77,16 +77,6 @@ public class ConfigProfileManager {
     public static final String ARCHES_APP_CONFIG_FILENAME = "arches.app.properties";
 
     /**
-     * The config file for the tahoe app
-     */
-    public static final String TAHOE_APP_CONFIG_FILENAME = "tahoe.app.properties";
-
-    /**
-     * The config file for the sequoia app
-     */
-    public static final String SEQUOIA_APP_CONFIG_FILENAME = "sequoia.app.properties";
-
-    /**
      * The filename of the build properties. Each project should produce it in the maven config.
      */
     public static final String BUILD_PROPERTIES_FILENAME = "about.properties";
@@ -173,7 +163,7 @@ public class ConfigProfileManager {
      * @param propertiesFileName the file name of the properties file located in the given profileUrl
      * @param profileUrl the URL where propertiesFileName is located
      * @return the properties object
-     * @throws IllegalStateException if URL is not valid
+     * @throws IllegalStateException if URL is not valid or properties file can't be read
      */
     private static Properties getPropertiesObject(String propertiesFileName, URL profileUrl) {
 
