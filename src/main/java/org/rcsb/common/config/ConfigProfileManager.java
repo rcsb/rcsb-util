@@ -77,16 +77,6 @@ public class ConfigProfileManager {
     public static final String ARCHES_APP_CONFIG_FILENAME = "arches.app.properties";
 
     /**
-     * The config file for the tahoe app
-     */
-    public static final String TAHOE_APP_CONFIG_FILENAME = "tahoe.app.properties";
-
-    /**
-     * The config file for the sequoia app
-     */
-    public static final String SEQUOIA_APP_CONFIG_FILENAME = "sequoia.app.properties";
-
-    /**
      * The filename of the build properties. Each project should produce it in the maven config.
      */
     public static final String BUILD_PROPERTIES_FILENAME = "about.properties";
@@ -132,6 +122,7 @@ public class ConfigProfileManager {
      * Get the config profile path specified in system property {@value CONFIG_PROFILE_PROPERTY} (passing -D parameter to JVM).
      * If no profile is specified in system property or a non-existing dir specified then null is returned.
      * @return the path to the profile or null if no profile specified
+     * @throws IllegalStateException if no valid configuration profile can be found
      */
     public static URL getProfileUrl() {
         String profile = System.getProperty(CONFIG_PROFILE_PROPERTY);
@@ -169,14 +160,15 @@ public class ConfigProfileManager {
 
     /**
      * Returns a Properties object by reading the given propertiesFileName from config profile URL directory specified in {@value CONFIG_PROFILE_PROPERTY}.
-     * @param propertiesFileName
-     * @return
+     * @param propertiesFileName the file name of the properties file located in the given profileUrl
+     * @param profileUrl the URL where propertiesFileName is located
+     * @return the properties object
+     * @throws IllegalStateException if URL is not valid or properties file can't be read
      */
-    private static Properties getPropertiesObject(String propertiesFileName) {
+    private static Properties getPropertiesObject(String propertiesFileName, URL profileUrl) {
 
     	Properties props = null;
     	
-        URL profileUrl = getProfileUrl();
         if (profileUrl!=null) {
             URL f = null;
             try {
@@ -184,7 +176,7 @@ public class ConfigProfileManager {
             } catch (MalformedURLException e) {
             	String msg = "Unexpected error! Malformed URL for properties file "+propertiesFileName+". Error: " + e.getMessage();
             	LOGGER.error(msg);
-            	throw new RuntimeException(msg);
+            	throw new IllegalStateException(msg);
             }
 
             if (urlExists(f)) {
@@ -197,12 +189,12 @@ public class ConfigProfileManager {
                 } catch (IOException e) {
                 	String msg = "Something went wrong reading file from URL "+f.toString()+", although the file was reported as existing";
                     LOGGER.error(msg);
-                    throw new RuntimeException(msg);
+                    throw new IllegalStateException(msg);
                 }
             } else {
             	String msg = "Could not find "+propertiesFileName+" file in profile URL "+ profileUrl.toString() +". Can't continue";
                 LOGGER.error(msg);
-                throw new RuntimeException(msg);
+                throw new IllegalStateException(msg);
             }
 
         }
@@ -237,16 +229,36 @@ public class ConfigProfileManager {
      * @return
      */
     public static Properties getPdbDbProperties() {
-    	return getPropertiesObject(PDB_DB_CONFIG_FILENAME);
+    	return getPropertiesObject(PDB_DB_CONFIG_FILENAME, getProfileUrl());
     }
-    
+
+    /**
+     * Gets the Properties object corresponding to the {@value #PDB_DB_CONFIG_FILENAME} config file for configuration of connection to primary pdb database.
+     * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY}
+     * @return
+     */
+    public static PropertiesReader getPdbDbPropertiesReader() {
+        URL profileUrl = getProfileUrl();
+        return new PropertiesReader(getPropertiesObject(PDB_DB_CONFIG_FILENAME, profileUrl), PDB_DB_CONFIG_FILENAME, profileUrl);
+    }
+
     /**
      * Gets the Properties object corresponding to the {@value #UNIPROT_DB_CONFIG_FILENAME} config file for configuration of connection to primary uniprot database.
      * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY} 
      * @return
      */
     public static Properties getUniprotDbProperties() {
-    	return getPropertiesObject(UNIPROT_DB_CONFIG_FILENAME);
+    	return getPropertiesObject(UNIPROT_DB_CONFIG_FILENAME, getProfileUrl());
+    }
+
+    /**
+     * Gets the PropertiesReader object corresponding to the {@value #UNIPROT_DB_CONFIG_FILENAME} config file for configuration of connection to primary uniprot database.
+     * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY}
+     * @return
+     */
+    public static PropertiesReader getUniprotDbPropertiesReader() {
+        URL profileUrl = getProfileUrl();
+        return new PropertiesReader(getPropertiesObject(UNIPROT_DB_CONFIG_FILENAME, profileUrl), UNIPROT_DB_CONFIG_FILENAME, profileUrl);
     }
 
     /**
@@ -255,7 +267,17 @@ public class ConfigProfileManager {
      * @return
      */
     public static Properties getYosemiteAppProperties() {
-    	return getPropertiesObject(YOSEMITE_APP_CONFIG_FILENAME);
+    	return getPropertiesObject(YOSEMITE_APP_CONFIG_FILENAME, getProfileUrl());
+    }
+
+    /**
+     * Gets the PropertiesReader object corresponding to the {@value #YOSEMITE_APP_CONFIG_FILENAME} config file for configuration of the yosemite app.
+     * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY}
+     * @return
+     */
+    public static PropertiesReader getYosemiteAppPropertiesReader() {
+        URL profileUrl = getProfileUrl();
+        return new PropertiesReader(getPropertiesObject(YOSEMITE_APP_CONFIG_FILENAME, profileUrl), YOSEMITE_APP_CONFIG_FILENAME, profileUrl);
     }
 
     /**
@@ -264,7 +286,17 @@ public class ConfigProfileManager {
      * @return
      */
     public static Properties getBorregoAppProperties() {
-    	return getPropertiesObject(BORREGO_APP_CONFIG_FILENAME);
+    	return getPropertiesObject(BORREGO_APP_CONFIG_FILENAME, getProfileUrl());
+    }
+
+    /**
+     * Gets the PropertiesReader object corresponding to the {@value #BORREGO_APP_CONFIG_FILENAME} config file for configuration of the borrego app.
+     * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY}
+     * @return
+     */
+    public static PropertiesReader getBorregoAppPropertiesReader() {
+        URL profileUrl = getProfileUrl();
+        return new PropertiesReader(getPropertiesObject(BORREGO_APP_CONFIG_FILENAME, profileUrl), BORREGO_APP_CONFIG_FILENAME, profileUrl);
     }
 
     /**
@@ -273,7 +305,17 @@ public class ConfigProfileManager {
      * @return
      */
     public static Properties getShapeAppProperties() {
-        return getPropertiesObject(SHAPE_APP_CONFIG_FILENAME);
+        return getPropertiesObject(SHAPE_APP_CONFIG_FILENAME, getProfileUrl());
+    }
+
+    /**
+     * Gets the PropertiesReader object corresponding to the {@value #SHAPE_APP_CONFIG_FILENAME} config file for configuration of the shape app.
+     * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY}
+     * @return
+     */
+    public static PropertiesReader getShapeAppPropertiesReader() {
+        URL profileUrl = getProfileUrl();
+        return new PropertiesReader(getPropertiesObject(SHAPE_APP_CONFIG_FILENAME, profileUrl), SHAPE_APP_CONFIG_FILENAME, profileUrl);
     }
 
     /**
@@ -282,7 +324,17 @@ public class ConfigProfileManager {
      * @return
      */
     public static Properties getEvergladesAppProperties() {
-        return getPropertiesObject(EVERGLADES_APP_CONFIG_FILENAME);
+        return getPropertiesObject(EVERGLADES_APP_CONFIG_FILENAME, getProfileUrl());
+    }
+
+    /**
+     * Gets the PropertiesReader object corresponding to the {@value #EVERGLADES_APP_CONFIG_FILENAME} config file for configuration of the indexer app.
+     * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY}
+     * @return
+     */
+    public static PropertiesReader getEvergladesAppPropertiesReader() {
+        URL profileUrl = getProfileUrl();
+        return new PropertiesReader(getPropertiesObject(EVERGLADES_APP_CONFIG_FILENAME, profileUrl), EVERGLADES_APP_CONFIG_FILENAME, profileUrl);
     }
 
     /**
@@ -291,7 +343,17 @@ public class ConfigProfileManager {
      * @return
      */
     public static Properties getRedwoodAppProperties() {
-        return getPropertiesObject(REDWOOD_APP_CONFIG_FILENAME);
+        return getPropertiesObject(REDWOOD_APP_CONFIG_FILENAME, getProfileUrl());
+    }
+
+    /**
+     * Gets the PropertiesReader object corresponding to the {@value #REDWOOD_APP_CONFIG_FILENAME} config file for configuration of the redwood app.
+     * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY}
+     * @return
+     */
+    public static PropertiesReader getRedwoodAppPropertiesReader() {
+        URL profileUrl = getProfileUrl();
+        return new PropertiesReader(getPropertiesObject(REDWOOD_APP_CONFIG_FILENAME, profileUrl), REDWOOD_APP_CONFIG_FILENAME, profileUrl);
     }
 
     /**
@@ -300,34 +362,25 @@ public class ConfigProfileManager {
      * @return
      */
     public static Properties getArchesAppProperties() {
-        return getPropertiesObject(ARCHES_APP_CONFIG_FILENAME);
+        return getPropertiesObject(ARCHES_APP_CONFIG_FILENAME, getProfileUrl());
     }
 
     /**
-     * Gets the Properties object corresponding to the {@value #TAHOE_APP_CONFIG_FILENAME} config file for configuration of the tahoe app.
+     * Gets the PropertiesReader object corresponding to the {@value #ARCHES_APP_CONFIG_FILENAME} config file for configuration of the arches app.
      * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY}
      * @return
      */
-    public static Properties getTahoeAppProperties() {
-        return getPropertiesObject(TAHOE_APP_CONFIG_FILENAME);
+    public static PropertiesReader getArchesAppPropertiesReader() {
+        URL profileUrl = getProfileUrl();
+        return new PropertiesReader(getPropertiesObject(ARCHES_APP_CONFIG_FILENAME, profileUrl), ARCHES_APP_CONFIG_FILENAME, profileUrl);
     }
-    
-    /**
-     * Gets the Properties object corresponding to the {@value #SEQUOIA_APP_CONFIG_FILENAME} config file for configuration of the sequoia app.
-     * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY}
-     * @return
-     */
-    public static Properties getSequoiaAppProperties() {
-        return getPropertiesObject(SEQUOIA_APP_CONFIG_FILENAME);
-    }
-
 
     /**
      * Gets the content of a pdb.properties file as it gets used by the legacy PDB webapp
      *
      * @return
      */
-    public static Properties getLegacyPdbProperties() { return getPropertiesObject(PDB_PROPERTIES_FILENAME);}
+    public static Properties getLegacyPdbProperties() { return getPropertiesObject(PDB_PROPERTIES_FILENAME, getProfileUrl());}
 
 
     /**
