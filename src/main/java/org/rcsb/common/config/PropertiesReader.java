@@ -6,6 +6,11 @@ import org.slf4j.LoggerFactory;
 import java.net.URL;
 import java.util.Properties;
 
+/**
+ * A convenience properties reader providing boiler plate to read properties, set defaults and logging the process.
+ * @author Jose Duarte
+ * @since 1.5.0
+ */
 public class PropertiesReader {
 
     private static final Logger logger = LoggerFactory.getLogger(PropertiesReader.class);
