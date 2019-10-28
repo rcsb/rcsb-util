@@ -191,4 +191,25 @@ public class PropertiesReader {
         }
         return intArrValue;
     }
+
+    /**
+     * Read a comma separated String array from given field. Commas are not an allowed value within the strings.
+     * @param field the property name
+     * @return a String array
+     * @throws IllegalArgumentException if property can't be read
+     */
+    public String[] loadStringArrayField(String field) {
+        String value = props.getProperty(field);
+        String[] stringArrValue;
+        if (value == null || value.trim().equals("")) {
+            logger.error("Field '{}' is not specified correctly in config file {} found in URL {}", field, fileName, configUrl);
+            throw new IllegalArgumentException("Missing configuration '"+field+"'");
+        } else {
+            logger.info("Using value '{}' for configuration field '{}'", value, field);
+        }
+        String[] tokens = value.split(",\\s*");
+        stringArrValue = new String[tokens.length];
+        System.arraycopy(tokens, 0, stringArrValue, 0, tokens.length);
+        return stringArrValue;
+    }
 }

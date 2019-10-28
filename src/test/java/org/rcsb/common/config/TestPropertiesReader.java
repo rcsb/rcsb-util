@@ -82,4 +82,32 @@ public class TestPropertiesReader {
         String s = propsReader.loadStringField("my.string.field", null);
         assertEquals("abcde", s);
     }
+
+    @Test
+    public void testReadStringArray() throws IOException  {
+        Properties props = new Properties();
+        props.load(TestPropertiesReader.class.getResourceAsStream(CONFIG_FILE));
+        PropertiesReader propsReader = new PropertiesReader(props, CONFIG_FILE, url);
+        String[] array = propsReader.loadStringArrayField("my.string.array.field");
+        assertEquals(7, array.length);
+        assertEquals("four", array[3]);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testReadEmptyStringArray() throws IOException  {
+        Properties props = new Properties();
+        props.load(TestPropertiesReader.class.getResourceAsStream(CONFIG_FILE));
+        PropertiesReader propsReader = new PropertiesReader(props, CONFIG_FILE, url);
+        propsReader.loadStringArrayField("my.empty.string.array.field");
+    }
+
+    @Test
+    public void testReadStringAsArray() throws IOException  {
+        Properties props = new Properties();
+        props.load(TestPropertiesReader.class.getResourceAsStream(CONFIG_FILE));
+        PropertiesReader propsReader = new PropertiesReader(props, CONFIG_FILE, url);
+        String[] array = propsReader.loadStringArrayField("my.string.field");
+        assertEquals(1, array.length);
+    }
+
 }
