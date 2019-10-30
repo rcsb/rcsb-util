@@ -191,4 +191,14 @@ public class PropertiesReader {
         }
         return intArrValue;
     }
+
+    /**
+     * Checks if property exists in the configuration profile.
+     * 
+     * @param field the property name
+     * @return true if property exists, false otherwise.
+     */
+    public boolean propertyExists(String field) {
+        return props.containsKey(field);
+    }
 }
