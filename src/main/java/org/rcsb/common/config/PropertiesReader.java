@@ -205,28 +205,21 @@ public class PropertiesReader {
      * @return a String array
      * @throws IllegalArgumentException if property can't be read
      */
-    public String[] loadStringArrayField(String field) {
+    public String[] loadStringArrayField(String field, String[] defaultValue) {
         String value = props.getProperty(field);
-        String[] stringArrValue;
         if (value == null || value.trim().equals("")) {
-            logger.error("Field '{}' is not specified correctly in config file {} found in URL {}", field, fileName, configUrl);
-            throw new IllegalArgumentException("Missing configuration '" + field + "'");
+            if (defaultValue != null) {
+                logger.warn("Optional property '{}' is not specified correctly in config file {} found in URL {}. Will use default value '{}' instead.", field, fileName, configUrl, defaultValue);
+                return defaultValue;
+            } else {
+                logger.error("Property '{}' is not specified correctly in config file {} found in URL {}", field, fileName, configUrl);
+                throw new IllegalArgumentException("Missing configuration '" + field + "' in '" + fileName + "' found in URL " + configUrl);
+            }
         } else {
-            logger.info("Using value '{}' for configuration field '{}'", value, field);
+            String[] tokens = value.split(",\\s*");
+            String[] stringArrValue = new String[tokens.length];
+            System.arraycopy(tokens, 0, stringArrValue, 0, tokens.length);
+            return stringArrValue;
         }
-        String[] tokens = value.split(",\\s*");
-        stringArrValue = new String[tokens.length];
-        System.arraycopy(tokens, 0, stringArrValue, 0, tokens.length);
-        return stringArrValue;
-    }
-
-    /**
-     * Checks if property exists in the configuration profile.
-     *
-     * @param field the property name
-     * @return true if property exists, false otherwise.
-     */
-    public boolean propertyExists(String field) {
-        return props.containsKey(field);
     }
 }

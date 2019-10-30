@@ -88,7 +88,7 @@ public class TestPropertiesReader {
         Properties props = new Properties();
         props.load(TestPropertiesReader.class.getResourceAsStream(CONFIG_FILE));
         PropertiesReader propsReader = new PropertiesReader(props, CONFIG_FILE, url);
-        String[] array = propsReader.loadStringArrayField("my.string.array.field");
+        String[] array = propsReader.loadStringArrayField("my.string.array.field", null);
         assertEquals(7, array.length);
         assertEquals("four", array[3]);
     }
@@ -98,7 +98,7 @@ public class TestPropertiesReader {
         Properties props = new Properties();
         props.load(TestPropertiesReader.class.getResourceAsStream(CONFIG_FILE));
         PropertiesReader propsReader = new PropertiesReader(props, CONFIG_FILE, url);
-        propsReader.loadStringArrayField("my.empty.string.array.field");
+        propsReader.loadStringArrayField("my.empty.string.array.field", null);
     }
 
     @Test
@@ -106,8 +106,16 @@ public class TestPropertiesReader {
         Properties props = new Properties();
         props.load(TestPropertiesReader.class.getResourceAsStream(CONFIG_FILE));
         PropertiesReader propsReader = new PropertiesReader(props, CONFIG_FILE, url);
-        String[] array = propsReader.loadStringArrayField("my.string.field");
+        String[] array = propsReader.loadStringArrayField("my.string.field", null);
         assertEquals(1, array.length);
     }
 
+    @Test
+    public void testUseArrayStringDefault() throws IOException  {
+        Properties props = new Properties();
+        props.load(TestPropertiesReader.class.getResourceAsStream(CONFIG_FILE));
+        PropertiesReader propsReader = new PropertiesReader(props, CONFIG_FILE, url);
+        String[] array = propsReader.loadStringArrayField("non.existing.string.field", new String[]{});
+        assertEquals(0, array.length);
+    }
 }
