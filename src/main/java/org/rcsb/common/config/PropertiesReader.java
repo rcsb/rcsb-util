@@ -142,15 +142,21 @@ public class PropertiesReader {
      * Read a comma separated double array from given field
      *
      * @param field the property name
+     * @param defaultValue the default value, if null the property is considered non-optional
      * @return a double array
      * @throws IllegalArgumentException if property can't be read
      */
-    public double[] loadDoubleArrayField(String field) {
+    public double[] loadDoubleArrayField(String field, double[] defaultValue) {
         String value = props.getProperty(field);
         double[] doubleArrValue;
         if (value == null || value.trim().equals("")) {
-            logger.error("Field '{}' is not specified correctly in config file {} found in URL {}", field, fileName, configUrl);
-            throw new IllegalArgumentException("Missing configuration '" + field + "'");
+            if (defaultValue != null) {
+                logger.warn("Optional property '{}' is not specified correctly in config file {} found in URL {}. Will use default value '{}' instead.", field, fileName, configUrl, defaultValue);
+                return defaultValue;
+            } else {
+                logger.error("Field '{}' is not specified correctly in config file {} found in URL {}", field, fileName, configUrl);
+                throw new IllegalArgumentException("Missing configuration '" + field + "' in '" + fileName + "' found in URL " + configUrl);
+            }
         } else {
             logger.info("Using value '{}' for configuration field '{}'", value, field);
         }
@@ -172,15 +178,21 @@ public class PropertiesReader {
      * Read a comma separated int array from given field
      *
      * @param field the property name
+     * @param defaultValue the default value, if null the property is considered non-optional
      * @return an int array
      * @throws IllegalArgumentException if property can't be read
      */
-    public int[] loadIntArrayField(String field) {
+    public int[] loadIntArrayField(String field, int[] defaultValue) {
         String value = props.getProperty(field);
         int[] intArrValue;
         if (value == null || value.trim().equals("")) {
-            logger.error("Field '{}' is not specified correctly in config file {} found in URL {}", field, fileName, configUrl);
-            throw new IllegalArgumentException("Missing configuration '" + field + "'");
+            if (defaultValue != null) {
+                logger.warn("Optional property '{}' is not specified correctly in config file {} found in URL {}. Will use default value '{}' instead.", field, fileName, configUrl, defaultValue);
+                return defaultValue;
+            } else {
+                logger.error("Field '{}' is not specified correctly in config file {} found in URL {}", field, fileName, configUrl);
+                throw new IllegalArgumentException("Missing configuration '" + field + "' in '" + fileName + "' found in URL " + configUrl);
+            }
         } else {
             logger.info("Using value '{}' for configuration field '{}'", value, field);
         }
@@ -202,6 +214,7 @@ public class PropertiesReader {
      * Read a comma separated String array from given field. Commas are not an allowed value within the strings.
      *
      * @param field the property name
+     * @param defaultValue the default value, if null the property is considered non-optional
      * @return a String array
      * @throws IllegalArgumentException if property can't be read
      */

@@ -25,7 +25,7 @@ public class TestPropertiesReader {
         Properties props = new Properties();
         props.load(TestPropertiesReader.class.getResourceAsStream(CONFIG_FILE));
         PropertiesReader propsReader = new PropertiesReader(props, CONFIG_FILE, url);
-        int[] array = propsReader.loadIntArrayField("my.int.array.field");
+        int[] array = propsReader.loadIntArrayField("my.int.array.field", null);
         assertEquals(10, array.length);
     }
 
@@ -34,7 +34,7 @@ public class TestPropertiesReader {
         Properties props = new Properties();
         props.load(TestPropertiesReader.class.getResourceAsStream(CONFIG_FILE));
         PropertiesReader propsReader = new PropertiesReader(props, CONFIG_FILE, url);
-        propsReader.loadIntArrayField("my.bad.int.array.field");
+        propsReader.loadIntArrayField("my.bad.int.array.field", null);
     }
 
     @Test
@@ -42,7 +42,7 @@ public class TestPropertiesReader {
         Properties props = new Properties();
         props.load(TestPropertiesReader.class.getResourceAsStream(CONFIG_FILE));
         PropertiesReader propsReader = new PropertiesReader(props, CONFIG_FILE, url);
-        double[] array = propsReader.loadDoubleArrayField("my.double.array.field");
+        double[] array = propsReader.loadDoubleArrayField("my.double.array.field", null);
         assertEquals(11, array.length);
     }
 
