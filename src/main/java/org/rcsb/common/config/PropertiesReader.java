@@ -7,7 +7,7 @@ import java.net.URL;
 import java.util.Properties;
 
 /**
- * A convenience properties reader providing boiler plate to read properties, set defaults and logging the process.
+ * A convenience properties reader providing boiler plate to read properties, set defaults and log the process.
  *
  * @author Jose Duarte
  * @since 1.5.0
