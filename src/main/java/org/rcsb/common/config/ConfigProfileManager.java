@@ -77,6 +77,11 @@ public class ConfigProfileManager {
     public static final String ARCHES_APP_CONFIG_FILENAME = "arches.app.properties";
 
     /**
+     * The config file for the seqmotif app
+     */
+    public static final String SEQMOTIF_APP_CONFIG_FILENAME = "seqmotif.app.properties";
+
+    /**
      * The filename of the build properties. Each project should produce it in the maven config.
      */
     public static final String BUILD_PROPERTIES_FILENAME = "about.properties";
@@ -373,6 +378,17 @@ public class ConfigProfileManager {
     public static PropertiesReader getArchesAppPropertiesReader() {
         URL profileUrl = getProfileUrl();
         return new PropertiesReader(getPropertiesObject(ARCHES_APP_CONFIG_FILENAME, profileUrl), ARCHES_APP_CONFIG_FILENAME, profileUrl);
+    }
+
+    /**
+     * Gets the PropertiesReader object corresponding to the {@value #SEQMOTIF_APP_CONFIG_FILENAME} config file for
+     * configuration of the seqmotif app. The config file is searched under the config profile URL path specified
+     * through system property {@value CONFIG_PROFILE_PROPERTY}
+     * @return
+     */
+    public static PropertiesReader getSeqmotifAppPropertiesReader() {
+        URL profileUrl = getProfileUrl();
+        return new PropertiesReader(getPropertiesObject(SEQMOTIF_APP_CONFIG_FILENAME, profileUrl), SEQMOTIF_APP_CONFIG_FILENAME, profileUrl);
     }
 
     /**
