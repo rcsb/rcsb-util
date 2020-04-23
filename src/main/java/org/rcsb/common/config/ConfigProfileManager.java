@@ -381,6 +381,16 @@ public class ConfigProfileManager {
     }
 
     /**
+     * Gets the Properties object corresponding to the {@value #SEQMOTIF_APP_CONFIG_FILENAME} config file for
+     * configuration of the shape app. The config file is searched under the config profile URL path specified through
+     * system property {@value CONFIG_PROFILE_PROPERTY}
+     * @return
+     */
+    public static Properties getSemotifAppProperties() {
+        return getPropertiesObject(SEQMOTIF_APP_CONFIG_FILENAME, getProfileUrl());
+    }
+
+    /**
      * Gets the PropertiesReader object corresponding to the {@value #SEQMOTIF_APP_CONFIG_FILENAME} config file for
      * configuration of the seqmotif app. The config file is searched under the config profile URL path specified
      * through system property {@value CONFIG_PROFILE_PROPERTY}
