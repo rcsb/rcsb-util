@@ -77,6 +77,11 @@ public class ConfigProfileManager {
     public static final String ARCHES_APP_CONFIG_FILENAME = "arches.app.properties";
 
     /**
+     * The config file for the pecos app
+     */
+    public static final String PECOS_APP_CONFIG_FILENAME = "pecos.app.properties";
+
+    /**
      * The config file for the seqmotif app
      */
     public static final String SEQMOTIF_APP_CONFIG_FILENAME = "seqmotif.app.properties";
@@ -378,6 +383,25 @@ public class ConfigProfileManager {
     public static PropertiesReader getArchesAppPropertiesReader() {
         URL profileUrl = getProfileUrl();
         return new PropertiesReader(getPropertiesObject(ARCHES_APP_CONFIG_FILENAME, profileUrl), ARCHES_APP_CONFIG_FILENAME, profileUrl);
+    }
+
+    /**
+     * Gets the PropertiesReader object corresponding to the {@value #PECOS_APP_CONFIG_FILENAME} config file for configuration of the pecos app.
+     * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY}
+     * @return
+     */
+    public static PropertiesReader getPecosAppPropertiesReader() {
+        URL profileUrl = getProfileUrl();
+        return new PropertiesReader(getPropertiesObject(PECOS_APP_CONFIG_FILENAME, profileUrl), PECOS_APP_CONFIG_FILENAME, profileUrl);
+    }
+
+    /**
+     * Gets the Properties object corresponding to the {@value #PECOS_APP_CONFIG_FILENAME} config file for configuration of the pecos app.
+     * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY}
+     * @return
+     */
+    public static Properties getPecosAppProperties() {
+        return getPropertiesObject(PECOS_APP_CONFIG_FILENAME, getProfileUrl());
     }
 
     /**
