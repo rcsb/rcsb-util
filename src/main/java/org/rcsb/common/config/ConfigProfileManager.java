@@ -86,6 +86,11 @@ public class ConfigProfileManager {
      */
     public static final String SEQMOTIF_APP_CONFIG_FILENAME = "seqmotif.app.properties";
 
+   /**
+    * The config file for the seqmotif app
+    */
+   public static final String DOWNLOAD_APP_CONFIG_FILENAME = "download.app.properties";
+
     /**
      * The filename of the build properties. Each project should produce it in the maven config.
      */
@@ -424,6 +429,25 @@ public class ConfigProfileManager {
         URL profileUrl = getProfileUrl();
         return new PropertiesReader(getPropertiesObject(SEQMOTIF_APP_CONFIG_FILENAME, profileUrl), SEQMOTIF_APP_CONFIG_FILENAME, profileUrl);
     }
+
+   /**
+    * Gets the PropertiesReader object corresponding to the {@value #DOWNLOAD_APP_CONFIG_FILENAME} config file for configuration of the download app.
+    * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY}
+    * @return
+    */
+   public static PropertiesReader getDownloadAppPropertiesReader() {
+      URL profileUrl = getProfileUrl();
+      return new PropertiesReader(getPropertiesObject(DOWNLOAD_APP_CONFIG_FILENAME, profileUrl), DOWNLOAD_APP_CONFIG_FILENAME, profileUrl);
+   }
+
+   /**
+    * Gets the Properties object corresponding to the {@value #DOWNLOAD_APP_CONFIG_FILENAME} config file for configuration of the download app.
+    * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY}
+    * @return
+    */
+   public static Properties getDownloadAppProperties() {
+      return getPropertiesObject(DOWNLOAD_APP_CONFIG_FILENAME, getProfileUrl());
+   }
 
     /**
      * Gets the content of a pdb.properties file as it gets used by the legacy PDB webapp
