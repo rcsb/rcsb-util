@@ -22,8 +22,16 @@ public class PropertiesReader {
 
     public PropertiesReader(Properties props, URL configUrl) {
         this.props = props;
-        this.fileName = configUrl.getFile().substring(configUrl.getFile().lastIndexOf('/'));
+        this.fileName = getFileNameFromUrl(configUrl);
         this.configUrl = configUrl;
+    }
+
+    private static String getFileNameFromUrl(URL url) {
+        String file = url.getFile();
+        if (file.contains("/")) {
+            return file.substring(file.lastIndexOf('/'));
+        }
+        return file;
     }
 
     public Properties getProperties() {
