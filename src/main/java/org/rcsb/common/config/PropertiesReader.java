@@ -17,21 +17,11 @@ public class PropertiesReader {
     private static final Logger logger = LoggerFactory.getLogger(PropertiesReader.class);
 
     private final Properties props;
-    private final String fileName;
     private final URL configUrl;
 
     public PropertiesReader(Properties props, URL configUrl) {
         this.props = props;
-        this.fileName = getFileNameFromUrl(configUrl);
         this.configUrl = configUrl;
-    }
-
-    private static String getFileNameFromUrl(URL url) {
-        String file = url.getFile();
-        if (file.contains("/")) {
-            return file.substring(file.lastIndexOf('/'));
-        }
-        return file;
     }
 
     public Properties getProperties() {
@@ -40,10 +30,6 @@ public class PropertiesReader {
 
     public URL getConfigUrl() {
         return configUrl;
-    }
-
-    public String getFileName() {
-        return fileName;
     }
 
     /**
@@ -59,11 +45,11 @@ public class PropertiesReader {
         int finalValue;
         if (value == null || value.trim().equals("")) {
             if (defaultValue != null) {
-                logger.warn("Optional property '{}' is not specified correctly in config file {} found in URL {}.  Will use default value '{}' instead.", field, fileName, configUrl, defaultValue);
+                logger.warn("Optional property '{}' is not specified correctly in config file {}.  Will use default value '{}' instead.", field, configUrl, defaultValue);
                 finalValue = defaultValue;
             } else {
-                logger.error("Property '{}' is not specified correctly in config file {} found in URL {}", field, fileName, configUrl);
-                throw new IllegalArgumentException("Missing configuration '" + field + "' in '" + fileName + "' found in URL " + configUrl);
+                logger.error("Property '{}' is not specified correctly in config file {}", field, configUrl);
+                throw new IllegalArgumentException("Missing configuration '" + field + "' in '" + configUrl + "'");
             }
         } else {
             try {
@@ -96,11 +82,11 @@ public class PropertiesReader {
         double finalValue;
         if (value == null || value.trim().equals("")) {
             if (defaultValue != null) {
-                logger.warn("Optional property '{}' is not specified correctly in config file {} found in URL {}.  Will use default value '{}' instead.", field, fileName, configUrl, defaultValue);
+                logger.warn("Optional property '{}' is not specified correctly in config file {}.  Will use default value '{}' instead.", field, configUrl, defaultValue);
                 finalValue = defaultValue;
             } else {
-                logger.error("Property '{}' is not specified correctly in config file {} found in URL {}", field, fileName, configUrl);
-                throw new IllegalArgumentException("Missing configuration '" + field + "' in '" + fileName + "' found in URL " + configUrl);
+                logger.error("Property '{}' is not specified correctly in config file {}", field, configUrl);
+                throw new IllegalArgumentException("Missing configuration '" + field + "' in '" + configUrl + "'");
             }
         } else {
             try {
@@ -132,11 +118,11 @@ public class PropertiesReader {
         String finalValue;
         if (value == null || value.trim().equals("")) {
             if (defaultValue != null) {
-                logger.warn("Optional property '{}' is not specified correctly in config file {} found in URL {}. Will use default value '{}' instead.", field, fileName, configUrl, defaultValue);
+                logger.warn("Optional property '{}' is not specified correctly in config file {}. Will use default value '{}' instead.", field, configUrl, defaultValue);
                 finalValue = defaultValue;
             } else {
-                logger.error("Property '{}' is not specified correctly in config file {} found in URL {}", field, fileName, configUrl);
-                throw new IllegalArgumentException("Missing configuration '" + field + "' in '" + fileName + "' found in URL " + configUrl);
+                logger.error("Property '{}' is not specified correctly in config file {}", field, configUrl);
+                throw new IllegalArgumentException("Missing configuration '" + field + "' in '" + configUrl + "'");
             }
         } else {
             logger.info("Using value '{}' for configuration field '{}'", value, field);
@@ -159,11 +145,11 @@ public class PropertiesReader {
         double[] doubleArrValue;
         if (value == null || value.trim().equals("")) {
             if (defaultValue != null) {
-                logger.warn("Optional property '{}' is not specified correctly in config file {} found in URL {}. Will use default value '{}' instead.", field, fileName, configUrl, defaultValue);
+                logger.warn("Optional property '{}' is not specified correctly in config file {}. Will use default value '{}' instead.", field, configUrl, defaultValue);
                 return defaultValue;
             } else {
-                logger.error("Field '{}' is not specified correctly in config file {} found in URL {}", field, fileName, configUrl);
-                throw new IllegalArgumentException("Missing configuration '" + field + "' in '" + fileName + "' found in URL " + configUrl);
+                logger.error("Field '{}' is not specified correctly in config file {}", field, configUrl);
+                throw new IllegalArgumentException("Missing configuration '" + field + "' in '" + configUrl + "'" );
             }
         } else {
             logger.info("Using value '{}' for configuration field '{}'", value, field);
@@ -195,11 +181,11 @@ public class PropertiesReader {
         int[] intArrValue;
         if (value == null || value.trim().equals("")) {
             if (defaultValue != null) {
-                logger.warn("Optional property '{}' is not specified correctly in config file {} found in URL {}. Will use default value '{}' instead.", field, fileName, configUrl, defaultValue);
+                logger.warn("Optional property '{}' is not specified correctly in config file {}. Will use default value '{}' instead.", field, configUrl, defaultValue);
                 return defaultValue;
             } else {
-                logger.error("Field '{}' is not specified correctly in config file {} found in URL {}", field, fileName, configUrl);
-                throw new IllegalArgumentException("Missing configuration '" + field + "' in '" + fileName + "' found in URL " + configUrl);
+                logger.error("Field '{}' is not specified correctly in config file {}", field, configUrl);
+                throw new IllegalArgumentException("Missing configuration '" + field + "' in '" + configUrl + "'");
             }
         } else {
             logger.info("Using value '{}' for configuration field '{}'", value, field);
@@ -230,11 +216,11 @@ public class PropertiesReader {
         String value = props.getProperty(field);
         if (value == null || value.trim().equals("")) {
             if (defaultValue != null) {
-                logger.warn("Optional property '{}' is not specified correctly in config file {} found in URL {}. Will use default value '{}' instead.", field, fileName, configUrl, defaultValue);
+                logger.warn("Optional property '{}' is not specified correctly in config file {}. Will use default value '{}' instead.", field, configUrl, defaultValue);
                 return defaultValue;
             } else {
-                logger.error("Property '{}' is not specified correctly in config file {} found in URL {}", field, fileName, configUrl);
-                throw new IllegalArgumentException("Missing configuration '" + field + "' in '" + fileName + "' found in URL " + configUrl);
+                logger.error("Property '{}' is not specified correctly in config file {}", field, configUrl);
+                throw new IllegalArgumentException("Missing configuration '" + field + "' in '" + configUrl + "'");
             }
         } else {
             String[] tokens = value.split(",\\s*");
