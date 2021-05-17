@@ -12,19 +12,20 @@ import static org.junit.Assert.assertEquals;
 
 public class TestPropertiesReader {
 
+    private static final String CONFIG_FILE = "/test_config.properties";
+
     private static URL url;
 
     @BeforeClass
     public static void setUrl() throws MalformedURLException {
-        url = new URL("file:///");
+        url = new URL("file:///" + CONFIG_FILE);
     }
 
-    private static final String CONFIG_FILE = "/test_config.properties";
     @Test
     public void testReadIntArrayGoodInput() throws IOException {
         Properties props = new Properties();
         props.load(TestPropertiesReader.class.getResourceAsStream(CONFIG_FILE));
-        PropertiesReader propsReader = new PropertiesReader(props, CONFIG_FILE, url);
+        PropertiesReader propsReader = new PropertiesReader(props, url);
         int[] array = propsReader.loadIntArrayField("my.int.array.field", null);
         assertEquals(10, array.length);
     }
@@ -33,7 +34,7 @@ public class TestPropertiesReader {
     public void testReadIntArrayBadInput() throws IOException {
         Properties props = new Properties();
         props.load(TestPropertiesReader.class.getResourceAsStream(CONFIG_FILE));
-        PropertiesReader propsReader = new PropertiesReader(props, CONFIG_FILE, url);
+        PropertiesReader propsReader = new PropertiesReader(props, url);
         propsReader.loadIntArrayField("my.bad.int.array.field", null);
     }
 
@@ -41,7 +42,7 @@ public class TestPropertiesReader {
     public void testReadDoubleArray() throws IOException  {
         Properties props = new Properties();
         props.load(TestPropertiesReader.class.getResourceAsStream(CONFIG_FILE));
-        PropertiesReader propsReader = new PropertiesReader(props, CONFIG_FILE, url);
+        PropertiesReader propsReader = new PropertiesReader(props, url);
         double[] array = propsReader.loadDoubleArrayField("my.double.array.field", null);
         assertEquals(11, array.length);
     }
@@ -50,7 +51,7 @@ public class TestPropertiesReader {
     public void testReadDouble() throws IOException {
         Properties props = new Properties();
         props.load(TestPropertiesReader.class.getResourceAsStream(CONFIG_FILE));
-        PropertiesReader propsReader = new PropertiesReader(props, CONFIG_FILE, url);
+        PropertiesReader propsReader = new PropertiesReader(props, url);
         double d = propsReader.loadDoubleField("my.double.field", null);
         assertEquals(2.345, d, 0.000001);
         d = propsReader.loadDoubleField("my.double.scientific.field", null);
@@ -61,7 +62,7 @@ public class TestPropertiesReader {
     public void testReadInteger() throws IOException {
         Properties props = new Properties();
         props.load(TestPropertiesReader.class.getResourceAsStream(CONFIG_FILE));
-        PropertiesReader propsReader = new PropertiesReader(props, CONFIG_FILE, url);
+        PropertiesReader propsReader = new PropertiesReader(props, url);
         int i = propsReader.loadIntegerField("my.int.field", null);
         assertEquals(56790, i);
     }
@@ -70,7 +71,7 @@ public class TestPropertiesReader {
     public void testReadIntegerBadInput() throws IOException {
         Properties props = new Properties();
         props.load(TestPropertiesReader.class.getResourceAsStream(CONFIG_FILE));
-        PropertiesReader propsReader = new PropertiesReader(props, CONFIG_FILE, url);
+        PropertiesReader propsReader = new PropertiesReader(props, url);
         propsReader.loadIntegerField("my.bad.int.field", null);
     }
 
@@ -78,7 +79,7 @@ public class TestPropertiesReader {
     public void testReadString() throws IOException {
         Properties props = new Properties();
         props.load(TestPropertiesReader.class.getResourceAsStream(CONFIG_FILE));
-        PropertiesReader propsReader = new PropertiesReader(props, CONFIG_FILE, url);
+        PropertiesReader propsReader = new PropertiesReader(props, url);
         String s = propsReader.loadStringField("my.string.field", null);
         assertEquals("abcde", s);
     }
@@ -87,7 +88,7 @@ public class TestPropertiesReader {
     public void testReadStringArray() throws IOException  {
         Properties props = new Properties();
         props.load(TestPropertiesReader.class.getResourceAsStream(CONFIG_FILE));
-        PropertiesReader propsReader = new PropertiesReader(props, CONFIG_FILE, url);
+        PropertiesReader propsReader = new PropertiesReader(props, url);
         String[] array = propsReader.loadStringArrayField("my.string.array.field", null);
         assertEquals(7, array.length);
         assertEquals("four", array[3]);
@@ -97,7 +98,7 @@ public class TestPropertiesReader {
     public void testReadEmptyStringArray() throws IOException  {
         Properties props = new Properties();
         props.load(TestPropertiesReader.class.getResourceAsStream(CONFIG_FILE));
-        PropertiesReader propsReader = new PropertiesReader(props, CONFIG_FILE, url);
+        PropertiesReader propsReader = new PropertiesReader(props, url);
         propsReader.loadStringArrayField("my.empty.string.array.field", null);
     }
 
@@ -105,7 +106,7 @@ public class TestPropertiesReader {
     public void testReadStringAsArray() throws IOException  {
         Properties props = new Properties();
         props.load(TestPropertiesReader.class.getResourceAsStream(CONFIG_FILE));
-        PropertiesReader propsReader = new PropertiesReader(props, CONFIG_FILE, url);
+        PropertiesReader propsReader = new PropertiesReader(props, url);
         String[] array = propsReader.loadStringArrayField("my.string.field", null);
         assertEquals(1, array.length);
     }
@@ -114,7 +115,7 @@ public class TestPropertiesReader {
     public void testUseArrayStringDefault() throws IOException  {
         Properties props = new Properties();
         props.load(TestPropertiesReader.class.getResourceAsStream(CONFIG_FILE));
-        PropertiesReader propsReader = new PropertiesReader(props, CONFIG_FILE, url);
+        PropertiesReader propsReader = new PropertiesReader(props, url);
         String[] array = propsReader.loadStringArrayField("non.existing.string.field", new String[]{});
         assertEquals(0, array.length);
     }

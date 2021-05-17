@@ -16,13 +16,13 @@ public class PropertiesReader {
 
     private static final Logger logger = LoggerFactory.getLogger(PropertiesReader.class);
 
-    private Properties props;
-    private String fileName;
-    private URL configUrl;
+    private final Properties props;
+    private final String fileName;
+    private final URL configUrl;
 
-    public PropertiesReader(Properties props, String fileName, URL configUrl) {
+    public PropertiesReader(Properties props, URL configUrl) {
         this.props = props;
-        this.fileName = fileName;
+        this.fileName = configUrl.getFile().substring(configUrl.getFile().lastIndexOf('/'));
         this.configUrl = configUrl;
     }
 
