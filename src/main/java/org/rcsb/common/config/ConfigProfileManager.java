@@ -36,16 +36,6 @@ public class ConfigProfileManager {
 
     public static final String CONFIG_PROFILE_PROPERTY = "rcsbConfigProfile";
 
-    /**
-     * The config file for the connection to the primary pdb database.
-     */
-	public static final String PDB_DB_CONFIG_FILENAME      = "pdb.database.properties";
-	
-	/**
-	 * The config file for the connection to the primary uniprot database.
-	 */
-	public static final String UNIPROT_DB_CONFIG_FILENAME  = "uniprot.database.properties";
-	
 	/**
 	 * The config file for the yosemite app
 	 */
@@ -95,12 +85,6 @@ public class ConfigProfileManager {
      * The filename of the build properties. Each project should produce it in the maven config.
      */
     public static final String BUILD_PROPERTIES_FILENAME = "about.properties";
-
-    /**
-     * The pdb.properties file that is used by the legacy PDB Webapp (usually in /pdb/pdbinabox/pdb.properties
-     */
-
-    public static final String PDB_PROPERTIES_FILENAME = "pdb.properties";
 
     
     private static boolean urlExists(URL url) {
@@ -238,44 +222,6 @@ public class ConfigProfileManager {
     	return map;
     }
     
-    /**
-     * Gets the Properties object corresponding to the {@value #PDB_DB_CONFIG_FILENAME} config file for configuration of connection to primary pdb database.
-     * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY}
-     * @return
-     */
-    public static Properties getPdbDbProperties() {
-    	return getPropertiesObject(PDB_DB_CONFIG_FILENAME, getProfileUrl());
-    }
-
-    /**
-     * Gets the Properties object corresponding to the {@value #PDB_DB_CONFIG_FILENAME} config file for configuration of connection to primary pdb database.
-     * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY}
-     * @return
-     */
-    public static PropertiesReader getPdbDbPropertiesReader() {
-        URL profileUrl = getProfileUrl();
-        return new PropertiesReader(getPropertiesObject(PDB_DB_CONFIG_FILENAME, profileUrl), PDB_DB_CONFIG_FILENAME, profileUrl);
-    }
-
-    /**
-     * Gets the Properties object corresponding to the {@value #UNIPROT_DB_CONFIG_FILENAME} config file for configuration of connection to primary uniprot database.
-     * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY} 
-     * @return
-     */
-    public static Properties getUniprotDbProperties() {
-    	return getPropertiesObject(UNIPROT_DB_CONFIG_FILENAME, getProfileUrl());
-    }
-
-    /**
-     * Gets the PropertiesReader object corresponding to the {@value #UNIPROT_DB_CONFIG_FILENAME} config file for configuration of connection to primary uniprot database.
-     * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY}
-     * @return
-     */
-    public static PropertiesReader getUniprotDbPropertiesReader() {
-        URL profileUrl = getProfileUrl();
-        return new PropertiesReader(getPropertiesObject(UNIPROT_DB_CONFIG_FILENAME, profileUrl), UNIPROT_DB_CONFIG_FILENAME, profileUrl);
-    }
-
     /**
      * Gets the Properties object corresponding to the {@value #YOSEMITE_APP_CONFIG_FILENAME} config file for configuration of the yosemite app.
      * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY} 
@@ -448,14 +394,6 @@ public class ConfigProfileManager {
    public static Properties getDownloadAppProperties() {
       return getPropertiesObject(DOWNLOAD_APP_CONFIG_FILENAME, getProfileUrl());
    }
-
-    /**
-     * Gets the content of a pdb.properties file as it gets used by the legacy PDB webapp
-     *
-     * @return
-     */
-    public static Properties getLegacyPdbProperties() { return getPropertiesObject(PDB_PROPERTIES_FILENAME, getProfileUrl());}
-
 
     /**
      * Gets the build properties from file {@value #BUILD_PROPERTIES_FILENAME} placed at the root of the resources dir.
