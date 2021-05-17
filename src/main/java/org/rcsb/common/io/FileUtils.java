@@ -16,27 +16,6 @@ import java.util.zip.GZIPOutputStream;
  */
 public class FileUtils {
 
-   
-
-   /**
-    * Writes the given input stream to a gzipped file.
-    * The user is responsible of closing the input stream.
-    * @param inStream the input stream
-    * @param file the file to write to
-    * @throws IOException if something goes wrong while writing file out
-    */
-    public static void writeGzipFile(InputStream inStream, File file) throws IOException {
-        // we use the try-with resources and autocloseable feature of java 7 here
-        try (
-                OutputStream os = new GZIPOutputStream(new FileOutputStream(file));) {
-            byte[] bytes = new byte[1024];
-            int length;
-            while ((length = inStream.read(bytes)) != -1) {
-                os.write(bytes, 0, length);
-            }
-        }
-    }
-
     /**
      * Find the unique file names within a directory tree that match the given pattern (either
      * a glob or a regex). Metadata dirs .git and CVS are ignored.
@@ -111,46 +90,5 @@ public class FileUtils {
       }
       return newset;
    }
-
-   /**
-    * Gets a map containing all structure/ligand files in given directory and all subdirs below it.
-    *
-    * @param dir the directory where to start the crawl
-    *
-    * @param isStructureDir if true the walk will be treated as a structure directory walk
-    *                       if false the walk will be treated as a ligand directory walk
-    *
-    * @return a map of ids (e.g. structure ids or ligand id) to a map of file names to file objects
-    */
-   public static SortedMap<String, Map<String, File>> getAllFilesMap(File dir, boolean isStructureDir) throws IOException {
-
-
-      SandboxFileVisitor visitor = new SandboxFileVisitor(isStructureDir);
-      Files.walkFileTree(dir.toPath(), visitor);
-
-      return visitor.getAllFilesMap();
-   }
-
-
-    /** Downloads a file from a remote location and writes it locally
-     *
-     * @param remoteURL
-     * @param localFile
-     * @throws FileNotFoundException
-     * @throws IOException
-     */
-    public static  void downloadFileFromRemote(URL remoteURL, File localFile) throws FileNotFoundException, IOException{
-
-        FileOutputStream out = new FileOutputStream(localFile);
-
-        InputStream in = remoteURL.openStream();
-        byte[] buf = new byte[4 * 1024]; // 4K buffer
-        int bytesRead;
-        while ((bytesRead = in.read(buf)) != -1) {
-            out.write(buf, 0, bytesRead);
-        }
-        in.close();
-        out.close();
-    }
 
 }

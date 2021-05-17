@@ -23,7 +23,7 @@ public class FileFinder extends SimpleFileVisitor<Path> {
     private static final String[] DIRS_TO_SKIP = {"CVS", ".git"};
 
     private final PathMatcher matcher;
-    private List<String> matchingFiles;
+    private final List<String> matchingFiles;
 
     /**
      * Create a new FileFinder given a pattern (either a glob or a regex pattern)
