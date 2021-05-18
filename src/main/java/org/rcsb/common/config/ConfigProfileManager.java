@@ -150,6 +150,7 @@ public class ConfigProfileManager {
     /**
      * Return a {@link PropertiesReader} object reading the URL provided in system property {@value CONFIG_PROFILE_PROPERTY} (passing -D parameter to JVM).
      * @return the PropertiesReader object
+     * @throws IllegalStateException if the system property {@value CONFIG_PROFILE_PROPERTY} is not set or the URL passed is not readable
      */
     public static PropertiesReader getPropertiesReader() {
         URL configUrl = getRcsbConfigUrl();
