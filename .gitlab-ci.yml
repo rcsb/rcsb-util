@@ -12,7 +12,7 @@ build:
   #    Build via maven
   - mvn --batch-mode --errors -U clean deploy
   tags:
-  - Java8-Nexus3
+    - Java11
   # make sure only branches and not tags are deployed, otherwise tag is deployed with same version and release overwrites are not allowed in nexus
   only:
     - branches
