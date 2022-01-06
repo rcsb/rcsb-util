@@ -5,77 +5,86 @@
     <artifactId>rcsb-util</artifactId>
     <packaging>jar</packaging>
     <name>RCSB utils</name>
-    <version>1.7.0</version>
+    <version>1.8.0-SNAPSHOT</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.targetEncoding>UTF-8</project.build.targetEncoding>
-        <jdk.version>1.8</jdk.version>
-        <slf4j.version>1.7.25</slf4j.version>
-        <log4j.version>2.9.1</log4j.version>
-        <junit.version>4.13.1</junit.version>
+        <jdk.version>11</jdk.version>
+        <slf4j.version>1.7.30</slf4j.version>
+        <log4j.version>2.17.1</log4j.version>
+        <junit.version>4.13.2</junit.version>
     </properties>
 
-	<distributionManagement>
-		<downloadUrl>http://nexus3.rcsb.org/repository/rcsb-super-proxy/</downloadUrl>
-		<repository>
-			<id>releases</id>
-			<name>RCSB PDB Maven Repository</name>
-			<url>http://nexus3.rcsb.org/repository/maven-releases/</url>
-		</repository>
-		<snapshotRepository>
-			<id>snapshots</id>
-			<url>http://nexus3.rcsb.org/repository/maven-snapshots/</url>
-			<uniqueVersion>false</uniqueVersion>
-		</snapshotRepository>
-	</distributionManagement>
+    <distributionManagement>
+        <downloadUrl>http://nexus3.rcsb.org/repository/rcsb-super-proxy/</downloadUrl>
+        <repository>
+            <id>releases</id>
+            <name>RCSB PDB Maven Repository</name>
+            <url>http://nexus3.rcsb.org/repository/maven-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>snapshots</id>
+            <url>http://nexus3.rcsb.org/repository/maven-snapshots/</url>
+            <uniqueVersion>false</uniqueVersion>
+        </snapshotRepository>
+    </distributionManagement>
 
-	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>${slf4j.version}</version>
-		</dependency>
-		<!-- Binding for Log4J -->
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-slf4j-impl</artifactId>
-			<version>${log4j.version}</version>
-			<!-- runtime scope includes the test scope as well -->
-			<scope>runtime</scope>
-		</dependency>
-		<!-- Log4j API and Core implementation required for binding -->
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-api</artifactId>
-			<version>${log4j.version}</version>
-			<!-- runtime scope includes the test scope as well -->
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
-			<version>${log4j.version}</version>
-			<!-- runtime scope includes the test scope as well -->
-			<scope>runtime</scope>
-		</dependency>
-	</dependencies>
+    <scm>
+        <url>https://github.com/rcsb/rcsb-util</url>
+        <connection>scm:git:git://github.com/rcsb/rcsb-util.git</connection>
+    </scm>
 
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.7.0</version>
-				<configuration>
-					<source>${jdk.version}</source>
-					<target>${jdk.version}</target>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+    <dependencies>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+
+        <!-- Binding for Log4J -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>${log4j.version}</version>
+            <!-- runtime scope includes the test scope as well -->
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- Log4j API and Core implementation required for binding -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>${log4j.version}</version>
+            <!-- runtime scope includes the test scope as well -->
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${log4j.version}</version>
+            <!-- runtime scope includes the test scope as well -->
+            <scope>runtime</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.7.0</version>
+                <configuration>
+                    <source>${jdk.version}</source>
+                    <target>${jdk.version}</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
