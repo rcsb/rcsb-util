@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
  */
 public class SandboxFileVisitor extends SimpleFileVisitor<Path> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(FileFinder.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SandboxFileVisitor.class);
 
     private static final String[] DIRS_TO_SKIP = {"CVS", ".git"};
 
@@ -101,13 +101,9 @@ public class SandboxFileVisitor extends SimpleFileVisitor<Path> {
 
     private static boolean skipDir(Path dir) {
         Path name = dir.getFileName();
-        for (String pattern : DIRS_TO_SKIP) {
-            PathMatcher m = FileSystems.getDefault().getPathMatcher("glob:" + pattern);
-            if (name!=null && m.matches(name)) {
-                return true;
-            }
-        }
-        return false;
+        return Arrays.stream(DIRS_TO_SKIP)
+            .map(pattern -> FileSystems.getDefault().getPathMatcher("glob:" + pattern))
+            .anyMatch(m -> name != null && m.matches(name));
     }
 
 }

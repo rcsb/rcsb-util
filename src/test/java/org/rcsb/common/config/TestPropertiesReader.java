@@ -1,25 +1,34 @@
 package org.rcsb.common.config;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestPropertiesReader {
 
+    private static final String CONFIG_FILE = "/test_config.properties";
+
     private static URL url;
 
-    @BeforeClass
-    public static void setUrl() throws MalformedURLException {
-        url = new URL("file:///");
+    static {
+        try {
+            url = new URL("file:///");
+        } catch (MalformedURLException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 
-    private static final String CONFIG_FILE = "/test_config.properties";
     @Test
     public void testReadIntArrayGoodInput() throws IOException {
         Properties props = new Properties();
@@ -29,12 +38,15 @@ public class TestPropertiesReader {
         assertEquals(10, array.length);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testReadIntArrayBadInput() throws IOException {
         Properties props = new Properties();
         props.load(TestPropertiesReader.class.getResourceAsStream(CONFIG_FILE));
         PropertiesReader propsReader = new PropertiesReader(props, CONFIG_FILE, url);
-        propsReader.loadIntArrayField("my.bad.int.array.field", null);
+        assertThrows(
+            ConfigException.class,
+            () -> propsReader.loadIntArrayField("my.bad.int.array.field",null)
+        );
     }
 
     @Test
@@ -66,12 +78,15 @@ public class TestPropertiesReader {
         assertEquals(56790, i);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test()
     public void testReadIntegerBadInput() throws IOException {
         Properties props = new Properties();
         props.load(TestPropertiesReader.class.getResourceAsStream(CONFIG_FILE));
         PropertiesReader propsReader = new PropertiesReader(props, CONFIG_FILE, url);
-        propsReader.loadIntegerField("my.bad.int.field", null);
+        assertThrows(
+            ConfigException.class,
+            () -> propsReader.loadIntegerField("my.bad.int.field", null)
+        );
     }
 
     @Test
@@ -93,12 +108,15 @@ public class TestPropertiesReader {
         assertEquals("four", array[3]);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testReadEmptyStringArray() throws IOException  {
         Properties props = new Properties();
         props.load(TestPropertiesReader.class.getResourceAsStream(CONFIG_FILE));
         PropertiesReader propsReader = new PropertiesReader(props, CONFIG_FILE, url);
-        propsReader.loadStringArrayField("my.empty.string.array.field", null);
+        assertThrows(
+            ConfigException.class,
+            () -> propsReader.loadStringArrayField("my.empty.string.array.field", null)
+        );
     }
 
     @Test
