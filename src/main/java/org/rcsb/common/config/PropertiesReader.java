@@ -4,11 +4,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URL;
+import java.text.ParseException;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -24,18 +26,36 @@ public class PropertiesReader {
 
     private static final Pattern csvPattern = Pattern.compile(",\\s*");
 
-    private final Properties props;
+    private final Map<String, String> props;
     private final String fileName;
     private final URL configUrl;
 
-    public PropertiesReader(Properties props, String fileName, URL configUrl) {
-        this.props = props;
+    public PropertiesReader(Map<?, ?> props, String fileName, URL configUrl) {
+        this.props = props.entrySet()
+            .stream()
+            .collect(Collectors.toMap(e -> e.getKey().toString(), e -> e.getValue().toString()));
         this.fileName = fileName;
         this.configUrl = configUrl;
     }
 
-    public Properties getProperties() {
-        return props;
+    public Map<String, String> getProperties() {
+        return props.entrySet()
+            .stream()
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    public Map<String, String> getProperties(Predicate<? super Map.Entry<String, String>> predicate) {
+        return props.entrySet()
+            .stream()
+            .filter(predicate)
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    public Map<String, Object> getProperties(Pattern pattern) {
+        return props.entrySet()
+            .stream()
+            .filter(e -> pattern.matcher(e.getKey().toString()).matches())
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     public URL getConfigUrl() {
@@ -46,13 +66,31 @@ public class PropertiesReader {
         return fileName;
     }
 
+    public boolean hasProperty(String field) {
+        return props.containsKey(field);
+    }
+
+    /**
+     * Read double from given field or set defaultValue
+     *
+     * @param field the property name
+     * @param defaultValue the default value, if null the property is considered non-optional
+     * @return the parsed boolean value
+     * @throws ConfigPropertyMissingException if {@code defaultValue} is null and the property does not exist
+     * @throws ParseException if the property could not be converted to a boolean
+     */
+    public boolean loadBooleanField(String field, Boolean defaultValue) {
+        return loadProp(field, defaultValue, Boolean::parseBoolean, "boolean");
+    }
+
     /**
      * Read int from given field or set defaultValue
      *
      * @param field        the property name
      * @param defaultValue the default value, if null the property is considered non-optional
      * @return the parsed int value
-     * @throws ConfigException if property is not optional and can't be read
+     * @throws ConfigPropertyMissingException if {@code defaultValue} is null and the property does not exist
+     * @throws ParseException if the property could not be converted to an int
      */
     public int loadIntegerField(String field, Integer defaultValue) {
         return loadProp(field, defaultValue, Integer::parseInt, "integer");
@@ -61,10 +99,11 @@ public class PropertiesReader {
     /**
      * Read double from given field or set defaultValue
      *
-     * @param field        the property name
+     * @param field the property name
      * @param defaultValue the default value, if null the property is considered non-optional
      * @return the parsed double value
-     * @throws ConfigException if property is not optional and can't be read
+     * @throws ConfigPropertyMissingException if {@code defaultValue} is null and the property does not exist
+     * @throws ParseException if the property could not be converted to a double
      */
     public double loadDoubleField(String field, Double defaultValue) {
         return loadProp(field, defaultValue, Double::parseDouble, "double");
@@ -73,10 +112,10 @@ public class PropertiesReader {
     /**
      * Read String from given field or set defaultValue
      *
-     * @param field        the property name
+     * @param field the property name
      * @param defaultValue the default value, if null the property is considered non-optional
      * @return the parsed string value
-     * @throws ConfigException if property is not optional and can't be read
+     * @throws ConfigPropertyMissingException if {@code defaultValue} is null and the property does not exist
      */
     public String loadStringField(String field, String defaultValue) {
         return loadProp(field, defaultValue, String::toString, "string");
@@ -88,14 +127,11 @@ public class PropertiesReader {
      * @param field the property name
      * @param defaultValue the default value, if null the property is considered non-optional
      * @return a double array
-     * @throws ConfigException if property can't be read
+     * @throws ConfigPropertyMissingException if {@code defaultValue} is null and the property does not exist
+     * @throws ParseException if the property could not be converted to a double array
      */
     public double[] loadDoubleArrayField(String field, double[] defaultValue) {
-        Function<String, double[]> convert = vs ->
-            Arrays.stream(csvPattern.split(vs))
-            .mapToDouble(Double::parseDouble)
-            .toArray();
-        return loadProp(field, defaultValue, convert, "double array");
+        return loadProp(field, defaultValue, this::convertDoubleArray, "double array");
     }
 
     /**
@@ -104,14 +140,11 @@ public class PropertiesReader {
      * @param field the property name
      * @param defaultValue the default value, if null the property is considered non-optional
      * @return an int array
-     * @throws ConfigException if property can't be read
+     * @throws ConfigPropertyMissingException if {@code defaultValue} is null and the property does not exist
+     * @throws ParseException if the property could not be converted to an int array
      */
     public int[] loadIntArrayField(String field, int[] defaultValue) {
-        Function<String, int[]> convert = vs ->
-            Arrays.stream(csvPattern.split(vs))
-                .mapToInt(Integer::parseInt)
-                .toArray();
-        return loadProp(field, defaultValue, convert, "int array");
+        return loadProp(field, defaultValue, this::convertIntArray, "int array");
     }
 
     /**
@@ -120,15 +153,31 @@ public class PropertiesReader {
      * @param field the property name
      * @param defaultValue the default value, if null the property is considered non-optional
      * @return a String array
-     * @throws ConfigException if property can't be read
+     * @throws ConfigPropertyMissingException if {@code defaultValue} is null and the property does not exist
+     * @throws ParseException if the property could not be converted to a string array
      */
     public String[] loadStringArrayField(String field, String[] defaultValue) {
-        Function<String, String[]> convert = vs -> csvPattern.split(vs);
-        return loadProp(field, defaultValue, convert, "string array");
+        return loadProp(field, defaultValue, this::convertStringArray, "string array");
+    }
+
+    public double[] convertDoubleArray(String value) {
+        return Arrays.stream(csvPattern.split(value))
+            .mapToDouble(Double::parseDouble)
+            .toArray();
+    }
+
+    public int[] convertIntArray(String value) {
+        return Arrays.stream(csvPattern.split(value))
+            .mapToInt(Integer::parseInt)
+            .toArray();
+    }
+
+    public String[] convertStringArray(String value) {
+        return csvPattern.split(value);
     }
 
     private <T> T loadProp(String field, T defaultValue, Function<String, ? extends T> convert, String typeName) {
-        String value = props.getProperty(field);
+        String value = props.get(field);
         // option 1: provided a value
         if (value != null && !value.isBlank()) {
             T finalValue;
@@ -136,7 +185,7 @@ public class PropertiesReader {
                 finalValue = convert.apply(value);
             } catch (NumberFormatException e) {
                 if (defaultValue == null) {
-                    throw new ConfigException("Could not parse double from '" + field + "' property", e);
+                    throw new ConfigParseException("Could not parse " + typeName + " from '" + field + "' property", e);
                 }
                 logger.error(
                     "Optional property {} value '{}' is not a {}. Will use the default value '{}'.",
@@ -161,7 +210,7 @@ public class PropertiesReader {
             "Property '{}' is not in config file {} at URL {}.",
             field, fileName, configUrl
         );
-        throw new ConfigException(
+        throw new ConfigPropertyMissingException(
             "Missing config '" + field + "' in '" + fileName + "' at URL" + " " + configUrl
         );
     }

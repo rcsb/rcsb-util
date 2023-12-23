@@ -135,7 +135,7 @@ public final class FileUtils {
      * @throws FileNotFoundException
      * @throws IOException
      */
-    public static  void downloadFileFromRemote(URL remoteURL, File localFile) throws FileNotFoundException, IOException{
+    public static void downloadFileFromRemote(URL remoteURL, File localFile) throws FileNotFoundException, IOException {
         try (FileOutputStream out = new FileOutputStream(localFile)) {
             try (InputStream in = remoteURL.openStream()) {
                 byte[] buf = new byte[4 * 1024]; // 4K buffer

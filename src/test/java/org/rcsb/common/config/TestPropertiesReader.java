@@ -6,12 +6,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -44,7 +39,7 @@ public class TestPropertiesReader {
         props.load(TestPropertiesReader.class.getResourceAsStream(CONFIG_FILE));
         PropertiesReader propsReader = new PropertiesReader(props, CONFIG_FILE, url);
         assertThrows(
-            ConfigException.class,
+            ConfigPropertyMissingException.class,
             () -> propsReader.loadIntArrayField("my.bad.int.array.field",null)
         );
     }
@@ -84,7 +79,7 @@ public class TestPropertiesReader {
         props.load(TestPropertiesReader.class.getResourceAsStream(CONFIG_FILE));
         PropertiesReader propsReader = new PropertiesReader(props, CONFIG_FILE, url);
         assertThrows(
-            ConfigException.class,
+            ConfigPropertyMissingException.class,
             () -> propsReader.loadIntegerField("my.bad.int.field", null)
         );
     }
@@ -114,7 +109,7 @@ public class TestPropertiesReader {
         props.load(TestPropertiesReader.class.getResourceAsStream(CONFIG_FILE));
         PropertiesReader propsReader = new PropertiesReader(props, CONFIG_FILE, url);
         assertThrows(
-            ConfigException.class,
+            ConfigPropertyMissingException.class,
             () -> propsReader.loadStringArrayField("my.empty.string.array.field", null)
         );
     }

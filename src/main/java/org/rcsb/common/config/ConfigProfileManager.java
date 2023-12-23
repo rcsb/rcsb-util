@@ -10,7 +10,6 @@ import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.net.*;
 import java.util.*;
-import java.util.Map.Entry;
 
 import java.util.stream.Collectors;
 
@@ -100,8 +99,7 @@ public final class ConfigProfileManager {
     private ConfigProfileManager() {
     }
 
-    private static boolean urlExists(URL url) {
-
+    private static boolean doesUrlExist(URL url) {
     	if ("file".equals(url.getProtocol())) {
     		try {
     			File file = new File(url.toURI());
@@ -124,7 +122,6 @@ public final class ConfigProfileManager {
         } catch (IOException e) {
             return false;
         }
-
     }
 
     /**
@@ -134,7 +131,7 @@ public final class ConfigProfileManager {
      * @return The URL to the profile or empty if no profile is specified in the system property,
      *         the local path does not exist,
      *         or an HTTP status code other than 200 was received in response to a HEAD
-     * @throws ConfigException if no valid configuration profile can be found
+     * @throws ConfigPropertyMissingException if no valid configuration profile can be found
      */
     public static Optional<URL> getProfileUrlOrEmpty() {
         return Optional.ofNullable(getProfileUrl());
@@ -161,12 +158,12 @@ public final class ConfigProfileManager {
             LOGGER.error("The URL '{}' specified with {} system property is malformed: {}", profile, CONFIG_PROFILE_PROPERTY, e.getMessage());
         }
         if (profileUrl == null) {
-            throw new ConfigException(
+            throw new ConfigPropertyMissingException(
                 "No valid configuration profile found! A valid configuration profile must be provided via JVM "
                     + "parameter -D" + CONFIG_PROFILE_PROPERTY
             );
         }
-        if (urlExists(profileUrl)) {
+        if (doesUrlExist(profileUrl)) {
             LOGGER.info(
                 "Valid config profile was read from {} system property. Will load config files from URL {}",
                 CONFIG_PROFILE_PROPERTY,
@@ -183,7 +180,7 @@ public final class ConfigProfileManager {
      * @param propertiesFileName the file name of the properties file located in the given profileUrl
      * @param profileUrl the URL where propertiesFileName is located
      * @return the properties object
-     * @throws ConfigException if URL is not valid or properties file can't be read
+     * @throws ConfigPropertyMissingException if URL is not valid or properties file can't be read
      */
     private static Properties getPropertiesObject(String propertiesFileName, URL profileUrl) {
         Objects.requireNonNull(propertiesFileName);
@@ -194,24 +191,24 @@ public final class ConfigProfileManager {
         } catch (MalformedURLException e) {
             String msg = "Unexpected error! Malformed URL for properties file "+propertiesFileName+". Error: " + e.getMessage();
             LOGGER.error(msg);
-            throw new ConfigException(msg, e);
+            throw new ConfigLoadException(msg, e);
         }
 
         Properties props = new Properties();
-        if (urlExists(f)) {
+        if (doesUrlExist(f)) {
             try {
                 InputStream propstream = f.openStream();
                 props.load(propstream);
             } catch (IOException e) {
                 String msg = "Something went wrong reading file from URL "+f.toString()+", although the file was reported as existing";
                 LOGGER.error(msg);
-                throw new ConfigException(msg, e);
+                throw new ConfigLoadException(msg, e);
             }
             LOGGER.info("Reading properties file {}", f.toString());
         } else {
             String msg = "Could not find "+propertiesFileName+" file in profile URL "+ profileUrl.toString() +". Can't continue";
             LOGGER.error(msg);
-            throw new ConfigException(msg);
+            throw new ConfigPropertyMissingException(msg);
         }
         
         return props;
@@ -234,7 +231,8 @@ public final class ConfigProfileManager {
                 Collectors.toMap(
                     entry -> (String) entry.getKey(),
                     entry -> (String) entry.getValue(),
-                    (a, b) -> b)
+                    (a, b) -> b
+                )
             );
     }
     
