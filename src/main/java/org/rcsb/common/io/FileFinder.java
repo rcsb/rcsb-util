@@ -10,12 +10,13 @@ import java.util.*;
 
 /**
  * A FileVisitor that will match the given glob pattern,
- * skipping metadata directories specifed in {@link #DIRS_TO_SKIP} (at the moment
- * CVS and .git)
+ * skipping metadata directories specifed in {@link #DIRS_TO_SKIP} (at the moment CVS and .git)
  *
  * @author Jose Duarte
  * @since 1.1.0
+ * @deprecated Use {@link java.nio.file.Files#walkFileTree(Path, FileVisitor)} instead.
  */
+@Deprecated(since="1.9.0", forRemoval = true)
 public class FileFinder extends SimpleFileVisitor<Path> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FileFinder.class);

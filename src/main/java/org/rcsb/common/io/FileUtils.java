@@ -13,7 +13,9 @@ import java.util.zip.GZIPOutputStream;
  * 
  * @author Jose Duarte
  * @since 1.1.0
+ * @deprecated These methods are highly specific and not needed
  */
+@Deprecated(since="1.9.0", forRemoval = true)
 public final class FileUtils {
 
     private FileUtils() {
@@ -135,14 +137,15 @@ public final class FileUtils {
      * @throws FileNotFoundException
      * @throws IOException
      */
-    public static void downloadFileFromRemote(URL remoteURL, File localFile) throws FileNotFoundException, IOException {
-        try (FileOutputStream out = new FileOutputStream(localFile)) {
-            try (InputStream in = remoteURL.openStream()) {
-                byte[] buf = new byte[4 * 1024]; // 4K buffer
-                int bytesRead;
-                while ((bytesRead = in.read(buf)) != -1) {
-                    out.write(buf, 0, bytesRead);
-                }
+    public static void downloadFileFromRemote(URL remoteURL, File localFile) throws IOException {
+        try (
+            FileOutputStream out = new FileOutputStream(localFile);
+            InputStream in = remoteURL.openStream()
+        ) {
+            byte[] buf = new byte[4 * 1024]; // 4K buffer
+            int bytesRead;
+            while ((bytesRead = in.read(buf)) != -1) {
+                out.write(buf, 0, bytesRead);
             }
         }
     }

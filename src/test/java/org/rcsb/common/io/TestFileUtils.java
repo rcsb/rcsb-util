@@ -18,7 +18,9 @@ import static org.junit.jupiter.api.Assertions.*;
  * Created by jose on 6/10/16.
  *
  * @author Jose Duarte
+ * @deprecated For removal
  */
+@Deprecated(since = "1.9.0", forRemoval = true)
 public class TestFileUtils {
 
     private static final String extension = "sdf";
@@ -32,7 +34,6 @@ public class TestFileUtils {
 
     private static int totalStructs = 0;
     private static int totalLigands = 0;
-
 
     static {
         try {

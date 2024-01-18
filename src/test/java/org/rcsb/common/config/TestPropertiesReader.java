@@ -10,6 +10,11 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ *
+ * @deprecated For removal
+ */
+@Deprecated(since = "1.9.0", forRemoval = true)
 public class TestPropertiesReader {
 
     private static final String CONFIG_FILE = "/test_config.properties";
@@ -39,7 +44,7 @@ public class TestPropertiesReader {
         props.load(TestPropertiesReader.class.getResourceAsStream(CONFIG_FILE));
         PropertiesReader propsReader = new PropertiesReader(props, CONFIG_FILE, url);
         assertThrows(
-            ConfigPropertyMissingException.class,
+            ConfigValueConversionException.class,
             () -> propsReader.loadIntArrayField("my.bad.int.array.field",null)
         );
     }
@@ -79,7 +84,7 @@ public class TestPropertiesReader {
         props.load(TestPropertiesReader.class.getResourceAsStream(CONFIG_FILE));
         PropertiesReader propsReader = new PropertiesReader(props, CONFIG_FILE, url);
         assertThrows(
-            ConfigPropertyMissingException.class,
+            ConfigValueConversionException.class,
             () -> propsReader.loadIntegerField("my.bad.int.field", null)
         );
     }
@@ -109,7 +114,7 @@ public class TestPropertiesReader {
         props.load(TestPropertiesReader.class.getResourceAsStream(CONFIG_FILE));
         PropertiesReader propsReader = new PropertiesReader(props, CONFIG_FILE, url);
         assertThrows(
-            ConfigPropertyMissingException.class,
+            ConfigKeyMissingException.class,
             () -> propsReader.loadStringArrayField("my.empty.string.array.field", null)
         );
     }

@@ -9,7 +9,10 @@ import java.util.*;
 
 /**
  * Created by ap3 on 08/11/2016.
+
+ * @deprecated These methods are highly specific and not needed
  */
+@Deprecated(since="1.9.0", forRemoval = true)
 public final class CommonUtils {
 
     private CommonUtils() {

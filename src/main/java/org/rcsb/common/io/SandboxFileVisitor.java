@@ -19,7 +19,9 @@ import java.util.regex.Pattern;
  *
  * @author Jose Duarte
  * @since 1.1.0
+ * @deprecated These methods are highly specific and not needed
  */
+@Deprecated(since="1.9.0", forRemoval = true)
 public class SandboxFileVisitor extends SimpleFileVisitor<Path> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SandboxFileVisitor.class);
