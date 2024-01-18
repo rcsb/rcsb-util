@@ -22,13 +22,13 @@ import java.util.regex.Pattern;
  */
 public class SandboxFileVisitor extends SimpleFileVisitor<Path> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(FileFinder.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SandboxFileVisitor.class);
 
-    private static final String[] DIRS_TO_SKIP = {"CVS", ".git"};
+    private static final Set<String> DIRS_TO_SKIP = Set.of("CVS", ".git");
 
     private SortedMap<String, Map<String, File>> map;
 
-    private boolean isStructureDir;
+    private final boolean isStructureDir;
 
     private static final Pattern structureIdPattern = Pattern.compile("^\\d\\w\\w\\w$");
     private static final Pattern ligandIdPattern = Pattern.compile("^\\w{1,3}$");
@@ -60,7 +60,7 @@ public class SandboxFileVisitor extends SimpleFileVisitor<Path> {
 
             Matcher m = p.matcher(parentDirName);
             if (m.matches()) {
-                Map<String, File> files = null;
+                Map<String, File> files;
                 if (map.containsKey(parentDirName)) {
                     files = map.get(parentDirName);
                 } else {
@@ -84,7 +84,7 @@ public class SandboxFileVisitor extends SimpleFileVisitor<Path> {
 
     @Override
     public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
-        if (skipDir(dir)) {
+        if (shouldSkipDir(dir)) {
             return FileVisitResult.SKIP_SUBTREE;
         } else {
             return FileVisitResult.CONTINUE;
@@ -99,15 +99,11 @@ public class SandboxFileVisitor extends SimpleFileVisitor<Path> {
         return map;
     }
 
-    private static boolean skipDir(Path dir) {
+    private static boolean shouldSkipDir(Path dir) {
         Path name = dir.getFileName();
-        for (String pattern : DIRS_TO_SKIP) {
-            PathMatcher m = FileSystems.getDefault().getPathMatcher("glob:" + pattern);
-            if (name!=null && m.matches(name)) {
-                return true;
-            }
-        }
-        return false;
+        return DIRS_TO_SKIP.stream()
+            .map(pattern -> FileSystems.getDefault().getPathMatcher("glob:" + pattern))
+            .anyMatch(m -> name != null && m.matches(name));
     }
 
 }

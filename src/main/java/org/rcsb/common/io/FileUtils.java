@@ -14,11 +14,12 @@ import java.util.zip.GZIPOutputStream;
  * @author Jose Duarte
  * @since 1.1.0
  */
-public class FileUtils {
+public final class FileUtils {
 
-   
+    private FileUtils() {
+    }
 
-   /**
+    /**
     * Writes the given input stream to a gzipped file.
     * The user is responsible of closing the input stream.
     * @param inStream the input stream
@@ -26,9 +27,7 @@ public class FileUtils {
     * @throws IOException if something goes wrong while writing file out
     */
     public static void writeGzipFile(InputStream inStream, File file) throws IOException {
-        // we use the try-with resources and autocloseable feature of java 7 here
-        try (
-                OutputStream os = new GZIPOutputStream(new FileOutputStream(file));) {
+        try (OutputStream os = new GZIPOutputStream(new FileOutputStream(file))) {
             byte[] bytes = new byte[1024];
             int length;
             while ((length = inStream.read(bytes)) != -1) {
@@ -132,25 +131,20 @@ public class FileUtils {
    }
 
 
-    /** Downloads a file from a remote location and writes it locally
-     *
-     * @param remoteURL
-     * @param localFile
+    /** Downloads a file from a remote location and writes it locally.
      * @throws FileNotFoundException
      * @throws IOException
      */
-    public static  void downloadFileFromRemote(URL remoteURL, File localFile) throws FileNotFoundException, IOException{
-
-        FileOutputStream out = new FileOutputStream(localFile);
-
-        InputStream in = remoteURL.openStream();
-        byte[] buf = new byte[4 * 1024]; // 4K buffer
-        int bytesRead;
-        while ((bytesRead = in.read(buf)) != -1) {
-            out.write(buf, 0, bytesRead);
+    public static void downloadFileFromRemote(URL remoteURL, File localFile) throws FileNotFoundException, IOException {
+        try (FileOutputStream out = new FileOutputStream(localFile)) {
+            try (InputStream in = remoteURL.openStream()) {
+                byte[] buf = new byte[4 * 1024]; // 4K buffer
+                int bytesRead;
+                while ((bytesRead = in.read(buf)) != -1) {
+                    out.write(buf, 0, bytesRead);
+                }
+            }
         }
-        in.close();
-        out.close();
     }
 
 }

@@ -4,7 +4,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URL;
+import java.text.ParseException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * A convenience properties reader providing boiler plate to read properties, set defaults and log the process.
@@ -16,18 +24,38 @@ public class PropertiesReader {
 
     private static final Logger logger = LoggerFactory.getLogger(PropertiesReader.class);
 
-    private Properties props;
-    private String fileName;
-    private URL configUrl;
+    private static final Pattern csvPattern = Pattern.compile(",\\s*");
 
-    public PropertiesReader(Properties props, String fileName, URL configUrl) {
-        this.props = props;
+    private final Map<String, String> props;
+    private final String fileName;
+    private final URL configUrl;
+
+    public PropertiesReader(Map<?, ?> props, String fileName, URL configUrl) {
+        this.props = props.entrySet()
+            .stream()
+            .collect(Collectors.toMap(e -> e.getKey().toString(), e -> e.getValue().toString()));
         this.fileName = fileName;
         this.configUrl = configUrl;
     }
 
-    public Properties getProperties() {
-        return props;
+    public Map<String, String> getProperties() {
+        return props.entrySet()
+            .stream()
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    public Map<String, String> getProperties(Predicate<? super Map.Entry<String, String>> predicate) {
+        return props.entrySet()
+            .stream()
+            .filter(predicate)
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    public Map<String, Object> getProperties(Pattern pattern) {
+        return props.entrySet()
+            .stream()
+            .filter(e -> pattern.matcher(e.getKey().toString()).matches())
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     public URL getConfigUrl() {
@@ -38,104 +66,59 @@ public class PropertiesReader {
         return fileName;
     }
 
+    public boolean hasProperty(String field) {
+        return props.containsKey(field);
+    }
+
+    /**
+     * Read double from given field or set defaultValue
+     *
+     * @param field the property name
+     * @param defaultValue the default value, if null the property is considered non-optional
+     * @return the parsed boolean value
+     * @throws ConfigPropertyMissingException if {@code defaultValue} is null and the property does not exist
+     * @throws ParseException if the property could not be converted to a boolean
+     */
+    public boolean loadBooleanField(String field, Boolean defaultValue) {
+        return loadProp(field, defaultValue, Boolean::parseBoolean, "boolean");
+    }
+
     /**
      * Read int from given field or set defaultValue
      *
      * @param field        the property name
      * @param defaultValue the default value, if null the property is considered non-optional
      * @return the parsed int value
-     * @throws IllegalArgumentException if property is not optional and can't be read
+     * @throws ConfigPropertyMissingException if {@code defaultValue} is null and the property does not exist
+     * @throws ParseException if the property could not be converted to an int
      */
     public int loadIntegerField(String field, Integer defaultValue) {
-        String value = props.getProperty(field);
-        int finalValue;
-        if (value == null || value.trim().equals("")) {
-            if (defaultValue != null) {
-                logger.warn("Optional property '{}' is not specified correctly in config file {} found in URL {}.  Will use default value '{}' instead.", field, fileName, configUrl, defaultValue);
-                finalValue = defaultValue;
-            } else {
-                logger.error("Property '{}' is not specified correctly in config file {} found in URL {}", field, fileName, configUrl);
-                throw new IllegalArgumentException("Missing configuration '" + field + "' in '" + fileName + "' found in URL " + configUrl);
-            }
-        } else {
-            try {
-                finalValue = Integer.parseInt(value);
-                logger.info("Using value '{}' for configuration field '{}'", value, field);
-            } catch (NumberFormatException e) {
-                if (defaultValue != null) {
-                    logger.warn("Could not parse integer from specified value '{}' for optional property '{}'", value, field);
-                    finalValue = defaultValue;
-                } else {
-                    logger.error("Could not parse integer from specified value '{}' for property '{}'", value, field);
-                    throw new IllegalArgumentException("Could not parse double from specified '" + field + "' property");
-                }
-            }
-
-        }
-        return finalValue;
+        return loadProp(field, defaultValue, Integer::parseInt, "integer");
     }
 
     /**
      * Read double from given field or set defaultValue
      *
-     * @param field        the property name
+     * @param field the property name
      * @param defaultValue the default value, if null the property is considered non-optional
      * @return the parsed double value
-     * @throws IllegalArgumentException if property is not optional and can't be read
+     * @throws ConfigPropertyMissingException if {@code defaultValue} is null and the property does not exist
+     * @throws ParseException if the property could not be converted to a double
      */
     public double loadDoubleField(String field, Double defaultValue) {
-        String value = props.getProperty(field);
-        double finalValue;
-        if (value == null || value.trim().equals("")) {
-            if (defaultValue != null) {
-                logger.warn("Optional property '{}' is not specified correctly in config file {} found in URL {}.  Will use default value '{}' instead.", field, fileName, configUrl, defaultValue);
-                finalValue = defaultValue;
-            } else {
-                logger.error("Property '{}' is not specified correctly in config file {} found in URL {}", field, fileName, configUrl);
-                throw new IllegalArgumentException("Missing configuration '" + field + "' in '" + fileName + "' found in URL " + configUrl);
-            }
-        } else {
-            try {
-                finalValue = Double.parseDouble(value);
-                logger.info("Using value '{}' for configuration field '{}'", value, field);
-            } catch (NumberFormatException e) {
-                if (defaultValue != null) {
-                    logger.warn("Could not parse double from specified value '{}' for optional property '{}'", value, field);
-                    finalValue = defaultValue;
-                } else {
-                    logger.error("Could not parse double from specified value '{}' for property '{}'", value, field);
-                    throw new IllegalArgumentException("Could not parse double from specified '" + field + "' property");
-                }
-            }
-        }
-        return finalValue;
+        return loadProp(field, defaultValue, Double::parseDouble, "double");
     }
 
     /**
      * Read String from given field or set defaultValue
      *
-     * @param field        the property name
+     * @param field the property name
      * @param defaultValue the default value, if null the property is considered non-optional
      * @return the parsed string value
-     * @throws IllegalArgumentException if property is not optional and can't be read
+     * @throws ConfigPropertyMissingException if {@code defaultValue} is null and the property does not exist
      */
     public String loadStringField(String field, String defaultValue) {
-        String value = props.getProperty(field);
-        String finalValue;
-        if (value == null || value.trim().equals("")) {
-            if (defaultValue != null) {
-                logger.warn("Optional property '{}' is not specified correctly in config file {} found in URL {}. Will use default value '{}' instead.", field, fileName, configUrl, defaultValue);
-                finalValue = defaultValue;
-            } else {
-                logger.error("Property '{}' is not specified correctly in config file {} found in URL {}", field, fileName, configUrl);
-                throw new IllegalArgumentException("Missing configuration '" + field + "' in '" + fileName + "' found in URL " + configUrl);
-            }
-        } else {
-            logger.info("Using value '{}' for configuration field '{}'", value, field);
-            finalValue = value;
-        }
-
-        return finalValue;
+        return loadProp(field, defaultValue, String::toString, "string");
     }
 
     /**
@@ -144,34 +127,11 @@ public class PropertiesReader {
      * @param field the property name
      * @param defaultValue the default value, if null the property is considered non-optional
      * @return a double array
-     * @throws IllegalArgumentException if property can't be read
+     * @throws ConfigPropertyMissingException if {@code defaultValue} is null and the property does not exist
+     * @throws ParseException if the property could not be converted to a double array
      */
     public double[] loadDoubleArrayField(String field, double[] defaultValue) {
-        String value = props.getProperty(field);
-        double[] doubleArrValue;
-        if (value == null || value.trim().equals("")) {
-            if (defaultValue != null) {
-                logger.warn("Optional property '{}' is not specified correctly in config file {} found in URL {}. Will use default value '{}' instead.", field, fileName, configUrl, defaultValue);
-                return defaultValue;
-            } else {
-                logger.error("Field '{}' is not specified correctly in config file {} found in URL {}", field, fileName, configUrl);
-                throw new IllegalArgumentException("Missing configuration '" + field + "' in '" + fileName + "' found in URL " + configUrl);
-            }
-        } else {
-            logger.info("Using value '{}' for configuration field '{}'", value, field);
-        }
-        String[] tokens = value.split(",\\s*");
-        doubleArrValue = new double[tokens.length];
-        for (int i = 0; i < tokens.length; i++) {
-            try {
-                doubleArrValue[i] = Double.parseDouble(tokens[i]);
-            } catch (NumberFormatException e) {
-                logger.error("Could not parse double from specified value '{}' at index {} for property '{}'", tokens[i], i, field);
-                throw new IllegalArgumentException("Could not parse double from specified '" + field + "' property");
-            }
-
-        }
-        return doubleArrValue;
+        return loadProp(field, defaultValue, this::convertDoubleArray, "double array");
     }
 
     /**
@@ -180,34 +140,11 @@ public class PropertiesReader {
      * @param field the property name
      * @param defaultValue the default value, if null the property is considered non-optional
      * @return an int array
-     * @throws IllegalArgumentException if property can't be read
+     * @throws ConfigPropertyMissingException if {@code defaultValue} is null and the property does not exist
+     * @throws ParseException if the property could not be converted to an int array
      */
     public int[] loadIntArrayField(String field, int[] defaultValue) {
-        String value = props.getProperty(field);
-        int[] intArrValue;
-        if (value == null || value.trim().equals("")) {
-            if (defaultValue != null) {
-                logger.warn("Optional property '{}' is not specified correctly in config file {} found in URL {}. Will use default value '{}' instead.", field, fileName, configUrl, defaultValue);
-                return defaultValue;
-            } else {
-                logger.error("Field '{}' is not specified correctly in config file {} found in URL {}", field, fileName, configUrl);
-                throw new IllegalArgumentException("Missing configuration '" + field + "' in '" + fileName + "' found in URL " + configUrl);
-            }
-        } else {
-            logger.info("Using value '{}' for configuration field '{}'", value, field);
-        }
-        String[] tokens = value.split(",\\s*");
-        intArrValue = new int[tokens.length];
-        for (int i = 0; i < tokens.length; i++) {
-            try {
-                intArrValue[i] = Integer.parseInt(tokens[i]);
-            } catch (NumberFormatException e) {
-                logger.error("Could not parse int from specified value '{}' at index {} for property '{}'", tokens[i], i, field);
-                throw new IllegalArgumentException("Could not parse int from specified '" + field + "' property");
-            }
-
-        }
-        return intArrValue;
+        return loadProp(field, defaultValue, this::convertIntArray, "int array");
     }
 
     /**
@@ -216,23 +153,66 @@ public class PropertiesReader {
      * @param field the property name
      * @param defaultValue the default value, if null the property is considered non-optional
      * @return a String array
-     * @throws IllegalArgumentException if property can't be read
+     * @throws ConfigPropertyMissingException if {@code defaultValue} is null and the property does not exist
+     * @throws ParseException if the property could not be converted to a string array
      */
     public String[] loadStringArrayField(String field, String[] defaultValue) {
-        String value = props.getProperty(field);
-        if (value == null || value.trim().equals("")) {
-            if (defaultValue != null) {
-                logger.warn("Optional property '{}' is not specified correctly in config file {} found in URL {}. Will use default value '{}' instead.", field, fileName, configUrl, defaultValue);
-                return defaultValue;
-            } else {
-                logger.error("Property '{}' is not specified correctly in config file {} found in URL {}", field, fileName, configUrl);
-                throw new IllegalArgumentException("Missing configuration '" + field + "' in '" + fileName + "' found in URL " + configUrl);
-            }
-        } else {
-            String[] tokens = value.split(",\\s*");
-            String[] stringArrValue = new String[tokens.length];
-            System.arraycopy(tokens, 0, stringArrValue, 0, tokens.length);
-            return stringArrValue;
-        }
+        return loadProp(field, defaultValue, this::convertStringArray, "string array");
     }
+
+    public double[] convertDoubleArray(String value) {
+        return Arrays.stream(csvPattern.split(value))
+            .mapToDouble(Double::parseDouble)
+            .toArray();
+    }
+
+    public int[] convertIntArray(String value) {
+        return Arrays.stream(csvPattern.split(value))
+            .mapToInt(Integer::parseInt)
+            .toArray();
+    }
+
+    public String[] convertStringArray(String value) {
+        return csvPattern.split(value);
+    }
+
+    private <T> T loadProp(String field, T defaultValue, Function<String, ? extends T> convert, String typeName) {
+        String value = props.get(field);
+        // option 1: provided a value
+        if (value != null && !value.isBlank()) {
+            T finalValue;
+            try {
+                finalValue = convert.apply(value);
+            } catch (NumberFormatException e) {
+                if (defaultValue == null) {
+                    throw new ConfigParseException("Could not parse " + typeName + " from '" + field + "' property", e);
+                }
+                logger.error(
+                    "Optional property {} value '{}' is not a {}. Will use the default value '{}'.",
+                    field, value, typeName, defaultValue
+                );
+                return defaultValue;
+            }
+            logger.info("Using value '{}' for property '{}'", value, field);
+            return finalValue;
+        }
+        // option 2: there's a default value
+        if (defaultValue != null) {
+            logger.warn(
+                "Optional property '{}' is not in config file {} at URL {}."
+                    + " Will use the default value '{}'.",
+                field, fileName, configUrl, defaultValue
+            );
+            return defaultValue;
+        }
+        // option 3: uh-oh, there is no default either
+        logger.warn(
+            "Property '{}' is not in config file {} at URL {}.",
+            field, fileName, configUrl
+        );
+        throw new ConfigPropertyMissingException(
+            "Missing config '" + field + "' in '" + fileName + "' at URL" + " " + configUrl
+        );
+    }
+
 }

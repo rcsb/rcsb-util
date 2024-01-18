@@ -7,17 +7,11 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.io.UncheckedIOException;
+import java.net.*;
+import java.util.*;
 
-
-import java.util.Properties;
-
+import java.util.stream.Collectors;
 
 /**
  * A manager of config profiles to be specified through system property {@value CONFIG_PROFILE_PROPERTY}.
@@ -30,7 +24,7 @@ import java.util.Properties;
  *
  * @author Jose Duarte
  */
-public class ConfigProfileManager {
+public final class ConfigProfileManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigProfileManager.class);
 
@@ -39,7 +33,7 @@ public class ConfigProfileManager {
     /**
      * The config file for the connection to the primary pdb database.
      */
-	public static final String PDB_DB_CONFIG_FILENAME      = "pdb.database.properties";
+	public static final String PDB_DB_CONFIG_FILENAME = "pdb.database.properties";
 	
 	/**
 	 * The config file for the connection to the primary uniprot database.
@@ -102,75 +96,83 @@ public class ConfigProfileManager {
 
     public static final String PDB_PROPERTIES_FILENAME = "pdb.properties";
 
-    
-    private static boolean urlExists(URL url) {
+    private ConfigProfileManager() {
+    }
 
-
-    	if (url.getProtocol().equals("file")) {
+    private static boolean doesUrlExist(URL url) {
+    	if ("file".equals(url.getProtocol())) {
     		try {
     			File file = new File(url.toURI());
     			return file.exists();
     		} catch (URISyntaxException e) {
-    			LOGGER.warn("Something went wrong while converting URL '{}' to file. Considering that URL doesn't exist", url.toString());
+    			LOGGER.warn(
+                    "Something went wrong while converting URL '{}' to file. Considering that URL doesn't exist",
+                    url.toString(), e
+                );
     			return false;
     		}
-    	} else {
-    		try {
-    			HttpURLConnection connection = (HttpURLConnection) url.openConnection(); 
-    			connection.setRequestMethod("HEAD");
-    			int code = connection.getResponseCode();
-
-    			if (code == 200) 
-    				return true;
-    			else
-    				return false;
-    		} catch (IOException e) {
-    			return false;
-
-    		}
-
     	}
-
+        try {
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("HEAD");
+            int code = connection.getResponseCode();
+            return code == 200;
+        } catch (ProtocolException e) {
+            throw new UncheckedIOException(e);
+        } catch (IOException e) {
+            return false;
+        }
     }
 
     /**
-     * Get the config profile path specified in system property {@value CONFIG_PROFILE_PROPERTY} (passing -D parameter to JVM).
+     * Gets the config profile path specified in system property {@value CONFIG_PROFILE_PROPERTY}
+     * (passing -D parameter to JVM).
      * If no profile is specified in system property or a non-existing dir specified then null is returned.
-     * @return the path to the profile or null if no profile specified
-     * @throws IllegalStateException if no valid configuration profile can be found
+     * @return The URL to the profile or empty if no profile is specified in the system property,
+     *         the local path does not exist,
+     *         or an HTTP status code other than 200 was received in response to a HEAD
+     * @throws ConfigPropertyMissingException if no valid configuration profile can be found
+     */
+    public static Optional<URL> getProfileUrlOrEmpty() {
+        return Optional.ofNullable(getProfileUrl());
+    }
+
+    /**
+     * See {@link #getProfileUrlOrEmpty()}, which is preferred.
      */
     public static URL getProfileUrl() {
         String profile = System.getProperty(CONFIG_PROFILE_PROPERTY);
-        URL profileUrl;
 
-        if (profile == null || profile.equals("")) {
-            LOGGER.error("No {} system property specified with -D{}. ", CONFIG_PROFILE_PROPERTY, CONFIG_PROFILE_PROPERTY);
-            profileUrl = null;
-        } else {
-
-            try {
-                profileUrl = new URL(profile);
-
-                if (!urlExists(profileUrl)) {
-                    LOGGER.error("The specified profile URL {} is not reachable.", profileUrl.toString());
-                    profileUrl = null;
-                } else {
-                    LOGGER.info("Valid config profile was read from {} system property. Will load config files from URL {}", CONFIG_PROFILE_PROPERTY, profileUrl.toString());
-
-                }
-            } catch (MalformedURLException e) {
-                LOGGER.error("The URL '{}' specified with {} system property is malformed: {}", profile, CONFIG_PROFILE_PROPERTY, e.getMessage());
-                profileUrl = null;
-            }
+        if (profile == null || "".equals(profile)) {
+            LOGGER.error(
+                "No {} system property specified with -D{}. ",
+                CONFIG_PROFILE_PROPERTY,
+                CONFIG_PROFILE_PROPERTY
+            );
+            return null;
         }
-
-        if (profileUrl==null) {
-
-            throw new IllegalStateException("No valid configuration profile found! A valid configuration profile must be provided via JVM parameter -D"+CONFIG_PROFILE_PROPERTY);
-
+        URL profileUrl = null;
+        try {
+            profileUrl = new URL(profile);
+        } catch (MalformedURLException e) {
+            LOGGER.error("The URL '{}' specified with {} system property is malformed: {}", profile, CONFIG_PROFILE_PROPERTY, e.getMessage());
         }
-
-        return profileUrl;
+        if (profileUrl == null) {
+            throw new ConfigPropertyMissingException(
+                "No valid configuration profile found! A valid configuration profile must be provided via JVM "
+                    + "parameter -D" + CONFIG_PROFILE_PROPERTY
+            );
+        }
+        if (doesUrlExist(profileUrl)) {
+            LOGGER.info(
+                "Valid config profile was read from {} system property. Will load config files from URL {}",
+                CONFIG_PROFILE_PROPERTY,
+                profileUrl.toString()
+            );
+            return profileUrl;
+        }
+        LOGGER.error("The specified profile URL {} is not reachable.", profileUrl.toString());
+        return null;
     }
 
     /**
@@ -178,40 +180,35 @@ public class ConfigProfileManager {
      * @param propertiesFileName the file name of the properties file located in the given profileUrl
      * @param profileUrl the URL where propertiesFileName is located
      * @return the properties object
-     * @throws IllegalStateException if URL is not valid or properties file can't be read
+     * @throws ConfigPropertyMissingException if URL is not valid or properties file can't be read
      */
     private static Properties getPropertiesObject(String propertiesFileName, URL profileUrl) {
+        Objects.requireNonNull(propertiesFileName);
+        Objects.requireNonNull(profileUrl);
+        URL f;
+        try {
+            f = new URL(profileUrl.getProtocol(), profileUrl.getHost(), profileUrl.getPort(), profileUrl.getFile() + "/" + propertiesFileName);
+        } catch (MalformedURLException e) {
+            String msg = "Unexpected error! Malformed URL for properties file "+propertiesFileName+". Error: " + e.getMessage();
+            LOGGER.error(msg);
+            throw new ConfigLoadException(msg, e);
+        }
 
-    	Properties props = null;
-    	
-        if (profileUrl!=null) {
-            URL f = null;
+        Properties props = new Properties();
+        if (doesUrlExist(f)) {
             try {
-            	f = new URL(profileUrl.getProtocol(), profileUrl.getHost(), profileUrl.getPort(), profileUrl.getFile() + "/" + propertiesFileName);
-            } catch (MalformedURLException e) {
-            	String msg = "Unexpected error! Malformed URL for properties file "+propertiesFileName+". Error: " + e.getMessage();
-            	LOGGER.error(msg);
-            	throw new IllegalStateException(msg);
-            }
-
-            if (urlExists(f)) {
-                try {
-                	InputStream propstream = f.openStream();
-                	props = new Properties();
-                	props.load(propstream);
-                    LOGGER.info("Reading properties file {}", f.toString());
-
-                } catch (IOException e) {
-                	String msg = "Something went wrong reading file from URL "+f.toString()+", although the file was reported as existing";
-                    LOGGER.error(msg);
-                    throw new IllegalStateException(msg);
-                }
-            } else {
-            	String msg = "Could not find "+propertiesFileName+" file in profile URL "+ profileUrl.toString() +". Can't continue";
+                InputStream propstream = f.openStream();
+                props.load(propstream);
+            } catch (IOException e) {
+                String msg = "Something went wrong reading file from URL "+f.toString()+", although the file was reported as existing";
                 LOGGER.error(msg);
-                throw new IllegalStateException(msg);
+                throw new ConfigLoadException(msg, e);
             }
-
+            LOGGER.info("Reading properties file {}", f.toString());
+        } else {
+            String msg = "Could not find "+propertiesFileName+" file in profile URL "+ profileUrl.toString() +". Can't continue";
+            LOGGER.error(msg);
+            throw new ConfigPropertyMissingException(msg);
         }
         
         return props;
@@ -226,22 +223,22 @@ public class ConfigProfileManager {
      * Persistence.createEntityManagerFactory("myjpa", ConfigProfileManager.getMapFromProperties(props));
      * </pre>
      * @param props the properties
-     * @return
      */
     public static Map<String,String> getMapFromProperties(Properties props) {
-    	Map<String,String> map = new HashMap<>();
-    	
-    	for (Entry<Object, Object> entry : props.entrySet()) {
-    		map.put((String) entry.getKey(), (String) entry.getValue());
-    	}
-    	
-    	return map;
+    	return props.entrySet()
+            .stream()
+            .collect(
+                Collectors.toMap(
+                    entry -> (String) entry.getKey(),
+                    entry -> (String) entry.getValue(),
+                    (a, b) -> b
+                )
+            );
     }
     
     /**
      * Gets the Properties object corresponding to the {@value #PDB_DB_CONFIG_FILENAME} config file for configuration of connection to primary pdb database.
      * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY}
-     * @return
      */
     public static Properties getPdbDbProperties() {
     	return getPropertiesObject(PDB_DB_CONFIG_FILENAME, getProfileUrl());
@@ -288,7 +285,6 @@ public class ConfigProfileManager {
     /**
      * Gets the PropertiesReader object corresponding to the {@value #YOSEMITE_APP_CONFIG_FILENAME} config file for configuration of the yosemite app.
      * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY}
-     * @return
      */
     public static PropertiesReader getYosemiteAppPropertiesReader() {
         URL profileUrl = getProfileUrl();
@@ -298,7 +294,6 @@ public class ConfigProfileManager {
     /**
      * Gets the Properties object corresponding to the {@value #BORREGO_APP_CONFIG_FILENAME} config file for configuration of the borrego app.
      * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY}
-     * @return
      */
     public static Properties getBorregoAppProperties() {
     	return getPropertiesObject(BORREGO_APP_CONFIG_FILENAME, getProfileUrl());
@@ -307,7 +302,6 @@ public class ConfigProfileManager {
     /**
      * Gets the PropertiesReader object corresponding to the {@value #BORREGO_APP_CONFIG_FILENAME} config file for configuration of the borrego app.
      * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY}
-     * @return
      */
     public static PropertiesReader getBorregoAppPropertiesReader() {
         URL profileUrl = getProfileUrl();
@@ -317,7 +311,6 @@ public class ConfigProfileManager {
     /**
      * Gets the Properties object corresponding to the {@value #SHAPE_APP_CONFIG_FILENAME} config file for configuration of the shape app.
      * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY}
-     * @return
      */
     public static Properties getShapeAppProperties() {
         return getPropertiesObject(SHAPE_APP_CONFIG_FILENAME, getProfileUrl());
@@ -326,7 +319,6 @@ public class ConfigProfileManager {
     /**
      * Gets the PropertiesReader object corresponding to the {@value #SHAPE_APP_CONFIG_FILENAME} config file for configuration of the shape app.
      * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY}
-     * @return
      */
     public static PropertiesReader getShapeAppPropertiesReader() {
         URL profileUrl = getProfileUrl();
@@ -336,7 +328,6 @@ public class ConfigProfileManager {
     /**
      * Gets the Properties object corresponding to the {@value #EVERGLADES_APP_CONFIG_FILENAME} config file for configuration of the indexer app.
      * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY}
-     * @return
      */
     public static Properties getEvergladesAppProperties() {
         return getPropertiesObject(EVERGLADES_APP_CONFIG_FILENAME, getProfileUrl());
@@ -345,7 +336,6 @@ public class ConfigProfileManager {
     /**
      * Gets the PropertiesReader object corresponding to the {@value #EVERGLADES_APP_CONFIG_FILENAME} config file for configuration of the indexer app.
      * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY}
-     * @return
      */
     public static PropertiesReader getEvergladesAppPropertiesReader() {
         URL profileUrl = getProfileUrl();
@@ -355,7 +345,6 @@ public class ConfigProfileManager {
     /**
      * Gets the Properties object corresponding to the {@value #REDWOOD_APP_CONFIG_FILENAME} config file for configuration of the redwood app.
      * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY}
-     * @return
      */
     public static Properties getRedwoodAppProperties() {
         return getPropertiesObject(REDWOOD_APP_CONFIG_FILENAME, getProfileUrl());
@@ -364,7 +353,6 @@ public class ConfigProfileManager {
     /**
      * Gets the PropertiesReader object corresponding to the {@value #REDWOOD_APP_CONFIG_FILENAME} config file for configuration of the redwood app.
      * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY}
-     * @return
      */
     public static PropertiesReader getRedwoodAppPropertiesReader() {
         URL profileUrl = getProfileUrl();
@@ -374,7 +362,6 @@ public class ConfigProfileManager {
     /**
      * Gets the Properties object corresponding to the {@value #ARCHES_APP_CONFIG_FILENAME} config file for configuration of the arches app.
      * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY}
-     * @return
      */
     public static Properties getArchesAppProperties() {
         return getPropertiesObject(ARCHES_APP_CONFIG_FILENAME, getProfileUrl());
@@ -383,7 +370,6 @@ public class ConfigProfileManager {
     /**
      * Gets the PropertiesReader object corresponding to the {@value #ARCHES_APP_CONFIG_FILENAME} config file for configuration of the arches app.
      * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY}
-     * @return
      */
     public static PropertiesReader getArchesAppPropertiesReader() {
         URL profileUrl = getProfileUrl();
@@ -393,7 +379,6 @@ public class ConfigProfileManager {
     /**
      * Gets the PropertiesReader object corresponding to the {@value #PECOS_APP_CONFIG_FILENAME} config file for configuration of the pecos app.
      * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY}
-     * @return
      */
     public static PropertiesReader getPecosAppPropertiesReader() {
         URL profileUrl = getProfileUrl();
@@ -403,7 +388,6 @@ public class ConfigProfileManager {
     /**
      * Gets the Properties object corresponding to the {@value #PECOS_APP_CONFIG_FILENAME} config file for configuration of the pecos app.
      * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY}
-     * @return
      */
     public static Properties getPecosAppProperties() {
         return getPropertiesObject(PECOS_APP_CONFIG_FILENAME, getProfileUrl());
@@ -413,7 +397,6 @@ public class ConfigProfileManager {
      * Gets the Properties object corresponding to the {@value #SEQMOTIF_APP_CONFIG_FILENAME} config file for
      * configuration of the shape app. The config file is searched under the config profile URL path specified through
      * system property {@value CONFIG_PROFILE_PROPERTY}
-     * @return
      */
     public static Properties getSemotifAppProperties() {
         return getPropertiesObject(SEQMOTIF_APP_CONFIG_FILENAME, getProfileUrl());
@@ -423,7 +406,6 @@ public class ConfigProfileManager {
      * Gets the PropertiesReader object corresponding to the {@value #SEQMOTIF_APP_CONFIG_FILENAME} config file for
      * configuration of the seqmotif app. The config file is searched under the config profile URL path specified
      * through system property {@value CONFIG_PROFILE_PROPERTY}
-     * @return
      */
     public static PropertiesReader getSeqmotifAppPropertiesReader() {
         URL profileUrl = getProfileUrl();
@@ -433,7 +415,6 @@ public class ConfigProfileManager {
    /**
     * Gets the PropertiesReader object corresponding to the {@value #DOWNLOAD_APP_CONFIG_FILENAME} config file for configuration of the download app.
     * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY}
-    * @return
     */
    public static PropertiesReader getDownloadAppPropertiesReader() {
       URL profileUrl = getProfileUrl();
@@ -443,24 +424,22 @@ public class ConfigProfileManager {
    /**
     * Gets the Properties object corresponding to the {@value #DOWNLOAD_APP_CONFIG_FILENAME} config file for configuration of the download app.
     * The config file is searched under the config profile URL path specified through system property {@value CONFIG_PROFILE_PROPERTY}
-    * @return
     */
    public static Properties getDownloadAppProperties() {
       return getPropertiesObject(DOWNLOAD_APP_CONFIG_FILENAME, getProfileUrl());
    }
 
     /**
-     * Gets the content of a pdb.properties file as it gets used by the legacy PDB webapp
-     *
-     * @return
+     * Gets the content of a pdb.properties file as it gets used by the legacy PDB webapp.
      */
-    public static Properties getLegacyPdbProperties() { return getPropertiesObject(PDB_PROPERTIES_FILENAME, getProfileUrl());}
+    public static Properties getLegacyPdbProperties() {
+        return getPropertiesObject(PDB_PROPERTIES_FILENAME, getProfileUrl());
+    }
 
 
     /**
      * Gets the build properties from file {@value #BUILD_PROPERTIES_FILENAME} placed at the root of the resources dir.
-     * The file should contain project.version, build.hash and build.timestamp variables populated by maven at buildtime. 
-     * @return
+     * The file should contain project.version, build.hash and build.timestamp variables populated by maven at buildtime.
      */
     public static Properties getBuildProperties() {
     	InputStream propstream = Thread.currentThread().getContextClassLoader().getResourceAsStream(BUILD_PROPERTIES_FILENAME);    	
@@ -468,7 +447,10 @@ public class ConfigProfileManager {
     	try {
     		props.load(propstream);
     	} catch (IOException e) {
-    		LOGGER.warn("Could not get the build properties from {} file! Build information will not be available.", BUILD_PROPERTIES_FILENAME);
+    		LOGGER.warn(
+                "Could not get the build properties from {} file! Build information will not be available.",
+                BUILD_PROPERTIES_FILENAME, e
+            );
     	}
         return props;
     }

@@ -1,16 +1,18 @@
 package org.rcsb.common.io;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by jose on 6/10/16.
@@ -32,14 +34,15 @@ public class TestFileUtils {
     private static int totalLigands = 0;
 
 
-    @BeforeClass
-    public static void setupBeforeClass() throws IOException {
-
-        rootDirFinfFilesTest = Files.createTempDirectory(tmpDir.toPath(), "pdbwebapp_testDir_findfiles");
-        rootDirFinfFilesTest.toFile().deleteOnExit();
-
-        rootDirSandboxFileVisitorTest = Files.createTempDirectory(tmpDir.toPath(), "pdbwebapp_testDir_sandbox");
-        rootDirSandboxFileVisitorTest.toFile().deleteOnExit();
+    static {
+        try {
+            rootDirFinfFilesTest = Files.createTempDirectory(tmpDir.toPath(), "pdbwebapp_testDir_findfiles");
+            rootDirFinfFilesTest.toFile().deleteOnExit();
+            rootDirSandboxFileVisitorTest = Files.createTempDirectory(tmpDir.toPath(), "pdbwebapp_testDir_sandbox");
+            rootDirSandboxFileVisitorTest.toFile().deleteOnExit();
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
 
     }
 
@@ -48,13 +51,13 @@ public class TestFileUtils {
         // creating a bunch of dirs and files for the testing of FileFinder
 
         // 25 directories with 25 AAA.sdf, 25 AA.sdf and 1 ABCD.sdf files per dir
-        for (char i='A';i<'Z';i++) {
+        for (char i = 'A'; (int) i < (int) 'Z'; i++) {
             File subDir = new File(rootDirFinfFilesTest.toFile(), String.valueOf(i));
             subDir.deleteOnExit();
             subDir.mkdirs();
 
 
-            for (char j ='A';j<'Z';j++) {
+            for (char j = 'A'; (int) j < (int) 'Z'; j++) {
                 StringBuilder sb = new StringBuilder();
                 sb.append(j);
                 sb.append(j);
@@ -87,8 +90,8 @@ public class TestFileUtils {
         // a full structure ids subdir in same layout as sandbox
         structsDir = new File(rootDirSandboxFileVisitorTest.toFile(), "structures");
         structsDir.deleteOnExit();
-        for (char i='A';i<'Z';i++) {
-            for (char j='A';j<'Z';j++) {
+        for (char i = 'A'; (int) i < (int) 'Z'; i++) {
+            for (char j = 'A'; (int) j < (int) 'Z'; j++) {
                 String hash = String.valueOf(i) + String.valueOf(j);
                 File dir = new File(structsDir, hash);
                 dir.mkdirs();
@@ -113,7 +116,7 @@ public class TestFileUtils {
         // a full ligand ids subdir in same layout as sandbox
         ligandsDir = new File(rootDirSandboxFileVisitorTest.toFile(), "ligands");
         ligandsDir.deleteOnExit();
-        for (char i='A';i<'Z';i++) {
+        for (char i = 'A'; (int) i < (int) 'Z'; i++) {
             String hash = String.valueOf(i);
             File dir = new File(ligandsDir, hash);
             dir.deleteOnExit();
@@ -140,33 +143,30 @@ public class TestFileUtils {
 
         String contents = "hola a todos";
 
-        FileUtils.writeGzipFile(new ByteArrayInputStream(contents.getBytes()), f);
+        FileUtils.writeGzipFile(new ByteArrayInputStream(contents.getBytes(StandardCharsets.UTF_8)), f);
 
 
         // let's read the raw file, we should get binary stuff
-        BufferedReader br = new BufferedReader(new FileReader(f));
-
         StringBuilder sb = new StringBuilder();
-        String line;
-        while ( ( line = br.readLine()) !=null ) {
-            sb.append(line);
+        try (BufferedReader br = new BufferedReader(new FileReader(f, StandardCharsets.UTF_8))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
+            }
         }
-        br.close();
-
-
         assertFalse(contents.equals(sb.toString()));
 
 
         // and now let's read it properly through gzip and get the text
         sb = new StringBuilder();
-        InputStream is = new GZIPInputStream(new FileInputStream(f));
-        BufferedReader br2 = new BufferedReader(new InputStreamReader(is));
-
-        while ( ( line = br2.readLine()) !=null ) {
-            sb.append(line);
+        try (BufferedReader br2 =
+                 new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(f)),
+                     StandardCharsets.UTF_8))) {
+            String line;
+            while ( ( line = br2.readLine()) !=null ) {
+                sb.append(line);
+            }
         }
-        br2.close();
-
         assertEquals(contents, sb.toString());
     }
 
@@ -260,7 +260,6 @@ public class TestFileUtils {
             assertTrue(submap.containsKey(key+"-100.jpg"));
         }
 
-
     }
 
     @Test
@@ -270,7 +269,6 @@ public class TestFileUtils {
         set.add("BCD.sdf.gz");
         set.add("CD.sdf.gz");
         set.add("D.sdf.gz");
-
 
         Set<String> chopped = FileUtils.chopExtensions(set, ".sdf.gz", true);
         assertEquals(4, chopped.size());
@@ -348,11 +346,10 @@ public class TestFileUtils {
 
     private static void createFile(File dir, String name) throws  IOException{
         File f = new File(dir, name);
-        FileWriter fw = new FileWriter(f);
-        fw.write("The file content");
-        fw.close();
         f.deleteOnExit();
+        try (FileWriter fw = new FileWriter(f, StandardCharsets.UTF_8)) {
+            fw.write("The file content");
+        }
     }
-
  
 }
