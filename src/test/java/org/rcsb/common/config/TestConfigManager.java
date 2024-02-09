@@ -10,11 +10,11 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Disabled;
 
-public class TestConfigStage {
+public class TestConfigManager {
 
     private static final String file = "/test_config.properties";
 
-    private static final ConfigStage stage = new ConfigStage();
+    private static final ConfigManager stage = new ConfigManagerImpl();
 
 
     @Test

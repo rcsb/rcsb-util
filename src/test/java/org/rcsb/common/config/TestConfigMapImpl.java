@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class TestConfigMap {
+public class TestConfigMapImpl {
 
     private static final String CONFIG_FILE = "/test_config.properties";
 
@@ -25,8 +25,8 @@ public class TestConfigMap {
     @Test
     public void testReadIntArrayGoodInput() throws IOException {
         Properties props = new Properties();
-        props.load(TestConfigMap.class.getResourceAsStream(CONFIG_FILE));
-        ConfigMap config = new ConfigMap(props);
+        props.load(TestConfigMapImpl.class.getResourceAsStream(CONFIG_FILE));
+        ConfigMapImpl config = new ConfigMapImpl(props);
         int[] array = config.getIntArray("my.int.array.field", null);
         assertEquals(10, array.length);
     }
@@ -34,8 +34,8 @@ public class TestConfigMap {
     @Test
     public void testReadIntArrayBadInput() throws IOException {
         Properties props = new Properties();
-        props.load(TestConfigMap.class.getResourceAsStream(CONFIG_FILE));
-        ConfigMap config = new ConfigMap(props);
+        props.load(TestConfigMapImpl.class.getResourceAsStream(CONFIG_FILE));
+        ConfigMapImpl config = new ConfigMapImpl(props);
         assertThrows(
             ConfigValueConversionException.class,
             () -> config.getIntArray("my.bad.int.array.field",null)
@@ -45,8 +45,8 @@ public class TestConfigMap {
     @Test
     public void testReadDoubleArray() throws IOException  {
         Properties props = new Properties();
-        props.load(TestConfigMap.class.getResourceAsStream(CONFIG_FILE));
-        ConfigMap config = new ConfigMap(props);
+        props.load(TestConfigMapImpl.class.getResourceAsStream(CONFIG_FILE));
+        ConfigMapImpl config = new ConfigMapImpl(props);
         double[] array = config.getDoubleArray("my.double.array.field", null);
         assertEquals(11, array.length);
     }
@@ -54,8 +54,8 @@ public class TestConfigMap {
     @Test
     public void testReadDouble() throws IOException {
         Properties props = new Properties();
-        props.load(TestConfigMap.class.getResourceAsStream(CONFIG_FILE));
-        ConfigMap config = new ConfigMap(props);
+        props.load(TestConfigMapImpl.class.getResourceAsStream(CONFIG_FILE));
+        ConfigMapImpl config = new ConfigMapImpl(props);
         double d = config.getDouble("my.double.field");
         assertEquals(2.345, d, 0.000001);
         d = config.getDouble("my.double.scientific.field");
@@ -65,8 +65,8 @@ public class TestConfigMap {
     @Test
     public void testReadInteger() throws IOException {
         Properties props = new Properties();
-        props.load(TestConfigMap.class.getResourceAsStream(CONFIG_FILE));
-        ConfigMap config = new ConfigMap(props);
+        props.load(TestConfigMapImpl.class.getResourceAsStream(CONFIG_FILE));
+        ConfigMapImpl config = new ConfigMapImpl(props);
         int i = config.getInt("my.int.field");
         assertEquals(56790, i);
     }
@@ -74,8 +74,8 @@ public class TestConfigMap {
     @Test()
     public void testReadIntegerBadInput() throws IOException {
         Properties props = new Properties();
-        props.load(TestConfigMap.class.getResourceAsStream(CONFIG_FILE));
-        ConfigMap config = new ConfigMap(props);
+        props.load(TestConfigMapImpl.class.getResourceAsStream(CONFIG_FILE));
+        ConfigMapImpl config = new ConfigMapImpl(props);
         assertThrows(
             ConfigValueConversionException.class,
             () -> config.getInt("my.bad.int.field")
@@ -85,8 +85,8 @@ public class TestConfigMap {
     @Test
     public void testReadString() throws IOException {
         Properties props = new Properties();
-        props.load(TestConfigMap.class.getResourceAsStream(CONFIG_FILE));
-        ConfigMap config = new ConfigMap(props);
+        props.load(TestConfigMapImpl.class.getResourceAsStream(CONFIG_FILE));
+        ConfigMapImpl config = new ConfigMapImpl(props);
         String s = config.getStr("my.string.field", null);
         assertEquals("abcde", s);
     }
@@ -94,8 +94,8 @@ public class TestConfigMap {
     @Test
     public void testReadStringArray() throws IOException  {
         Properties props = new Properties();
-        props.load(TestConfigMap.class.getResourceAsStream(CONFIG_FILE));
-        ConfigMap config = new ConfigMap(props);
+        props.load(TestConfigMapImpl.class.getResourceAsStream(CONFIG_FILE));
+        ConfigMapImpl config = new ConfigMapImpl(props);
         String[] array = config.getStrArray("my.string.array.field");
         assertEquals(7, array.length);
         assertEquals("four", array[3]);
@@ -104,8 +104,8 @@ public class TestConfigMap {
     @Test
     public void testReadEmptyStringArray() throws IOException  {
         Properties props = new Properties();
-        props.load(TestConfigMap.class.getResourceAsStream(CONFIG_FILE));
-        ConfigMap config = new ConfigMap(props);
+        props.load(TestConfigMapImpl.class.getResourceAsStream(CONFIG_FILE));
+        ConfigMapImpl config = new ConfigMapImpl(props);
         assertThrows(
             ConfigKeyMissingException.class,
             () -> config.getStrArray("my.empty.string.array.field", null)
@@ -115,8 +115,8 @@ public class TestConfigMap {
     @Test
     public void testReadStringAsArray() throws IOException  {
         Properties props = new Properties();
-        props.load(TestConfigMap.class.getResourceAsStream(CONFIG_FILE));
-        ConfigMap config = new ConfigMap(props);
+        props.load(TestConfigMapImpl.class.getResourceAsStream(CONFIG_FILE));
+        ConfigMapImpl config = new ConfigMapImpl(props);
         String[] array = config.getStrArray("my.string.field", null);
         assertEquals(1, array.length);
     }
@@ -124,8 +124,8 @@ public class TestConfigMap {
     @Test
     public void testUseArrayStringDefault() throws IOException  {
         Properties props = new Properties();
-        props.load(TestConfigMap.class.getResourceAsStream(CONFIG_FILE));
-        ConfigMap config = new ConfigMap(props);
+        props.load(TestConfigMapImpl.class.getResourceAsStream(CONFIG_FILE));
+        ConfigMapImpl config = new ConfigMapImpl(props);
         String[] array = config.getStrArray("non.existing.string.field", new String[]{"x"});
         assertEquals(1, array.length);
     }

@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 
 /**
  * A collection of static methods that convert string-typed property values to their correct types.
- * These are meant to be passed as {@code convert} in {@link ConfigMap#get}.
+ * These are meant to be passed as {@code convert} in {@link ConfigMapImpl#get}.
  *
  * @author Douglas Myers-Turnbull
  * @since 2.0.0

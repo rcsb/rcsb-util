@@ -4,7 +4,6 @@ package org.rcsb.common.config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.*;
@@ -21,16 +20,11 @@ import java.util.stream.Collectors;
  * @author Douglas Myers-Turnbull
  * @since 2.0.0
  */
-public class ConfigStage {
+public class ConfigManagerImpl implements ConfigManager {
 
-    private static final Logger logger = LoggerFactory.getLogger(ConfigStage.class);
+    private static final Logger logger = LoggerFactory.getLogger(ConfigManagerImpl.class);
 
-    /**
-     * Reads the {@code .properties} file at URL {@code urlOrPath}.
-     * @param urlOrPath Must start with {@code https://}, {@code http://}, or {@code file://}.
-     * @see #read(URL)
-     * @throws ConfigProfileException If the URL is malformed or the profile could not be read
-     */
+    @Override
     public ConfigMap read(String urlOrPath) {
         if (urlOrPath.startsWith("https://")) {
             // convert to a URL
@@ -45,10 +39,7 @@ public class ConfigStage {
         return read(Paths.get(urlOrPath));
     }
 
-    /**
-     * @throws ConfigProfileException If the profile could not be read
-     * @see #read(URL)
-     */
+    @Override
     public ConfigMap read(Path path) {
         try {
             return read(path.toUri().toURL());
@@ -57,11 +48,7 @@ public class ConfigStage {
         }
     }
 
-    /**
-     * Reads a properties file from a URL.
-     *
-     * @throws ConfigProfileException If the profile could not be read
-     */
+    @Override
     public ConfigMap read(URL url) {
         validate(url.toExternalForm());
         Properties props = new Properties();
@@ -75,11 +62,7 @@ public class ConfigStage {
         return toMap(props);
     }
 
-    /**
-     * Converts a profile URL string into a URL, checking that it can contact the URL by HTTP or file access.
-     *
-     * @throws ConfigProfileException If the URL is invalid or inaccessible/unreadable
-     */
+    @Override
     public URL validate(String profile) {
         if (profile == null) {
             throw new ConfigProfileException("Config profile is null");
@@ -144,7 +127,7 @@ public class ConfigStage {
     }
 
     protected ConfigMap toMap(Map<?, ?> props) {
-        return new ConfigMap(props.entrySet().stream()
+        return new ConfigMapImpl(props.entrySet().stream()
             .collect(Collectors.toMap(entry -> (String) entry.getKey(),
                 entry -> (String) entry.getValue(),
                 (a, b) -> b

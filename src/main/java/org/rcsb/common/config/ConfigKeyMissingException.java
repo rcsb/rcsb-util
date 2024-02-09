@@ -1,7 +1,7 @@
 package org.rcsb.common.config;
 
 /**
- * An exception thrown when a {@link ConfigMap} does not contain a property with the requested key.
+ * An exception thrown when a {@link ConfigMapImpl} does not contain a property with the requested key.
  *
  * @author Douglas Myers-Turnbull
  * @since 2.0.0
