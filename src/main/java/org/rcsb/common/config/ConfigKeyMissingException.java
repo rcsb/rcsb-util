@@ -4,7 +4,7 @@ package org.rcsb.common.config;
  * An exception thrown when a {@link ConfigMap} does not contain a property with the requested key.
  *
  * @author Douglas Myers-Turnbull
- * @since 1.9.0
+ * @since 2.0.0
  */
 public class ConfigKeyMissingException extends ConfigException {
 

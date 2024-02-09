@@ -19,35 +19,26 @@ import java.util.stream.Collectors;
  * A utility that finds and reads config profiles.
  *
  * @author Douglas Myers-Turnbull
- * @since 1.9.0
+ * @since 2.0.0
  */
 public class ConfigStage {
 
     private static final Logger logger = LoggerFactory.getLogger(ConfigStage.class);
 
     /**
-     * Gets the profile (URL string) from the system property.
-     *
-     * @throws ConfigProfileException If the system property is not set or is blank
-     * @deprecated This method was added to ease migration from {@link ConfigProfileManager}.
-     *             It may be removed in a future release.
-     */
-    @Deprecated(since="1.9.0")
-    public URL urlFromSystemProperty(String property) {
-        String profile = System.getProperty(property);
-        if (profile == null || profile.isBlank()) {
-            throw new ConfigProfileException("No system property '" + property + "'.");
-        }
-        return validate(profile);
-    }
-
-    /**
+     * Reads the {@code .properties} file at URL {@code urlOrPath}.
+     * @param urlOrPath Must start with {@code https://}, {@code http://}, or {@code file://}.
      * @see #read(URL)
      * @throws ConfigProfileException If the URL is malformed or the profile could not be read
      */
     public ConfigMap read(String urlOrPath) {
-        if (urlOrPath.contains(":/")) {
+        if (urlOrPath.startsWith("https://")) {
             // convert to a URL
+            return read(validate(urlOrPath));
+        }
+        if (urlOrPath.startsWith("http://")) {
+            // convert to a URL
+            logger.warn("Accessing insecure http URL {}", urlOrPath);
             return read(validate(urlOrPath));
         }
         // can't be a URL, so try converting to Path
@@ -90,6 +81,12 @@ public class ConfigStage {
      * @throws ConfigProfileException If the URL is invalid or inaccessible/unreadable
      */
     public URL validate(String profile) {
+        if (profile == null) {
+            throw new ConfigProfileException("Config profile is null");
+        }
+        if (profile.isBlank()) {
+            throw new ConfigProfileException("Config profile is blank");
+        }
         final URL url;
         try {
             url = new URL(profile);

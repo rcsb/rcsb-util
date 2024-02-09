@@ -4,7 +4,7 @@ package org.rcsb.common.config;
  * An exception related to config.
  *
  * @author Douglas Myers-Turnbull
- * @since 1.9.0
+ * @since 2.0.0
  */
 public abstract class ConfigException extends RuntimeException {
 

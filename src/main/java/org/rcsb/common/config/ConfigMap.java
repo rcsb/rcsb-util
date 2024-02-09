@@ -21,7 +21,7 @@ import java.util.stream.*;
  * These methods throw a {@link ConfigValueConversionException} if the value could not be converted,
  * and a {@link ConfigKeyMissingException} if the key was not found.
  * Implements most of the {@link java.util.Map} methods, like {@link #size()} and {@link #entrySet()}.
- * Call {@link #getProperties()} to get a true map; this returns an unmodifiable view of the underlying map.
+ * Call {@link #rawMap()} to get a true map; this returns an unmodifiable view of the underlying map.
  *
  * Example:
  *
@@ -32,7 +32,7 @@ import java.util.stream.*;
  * }
  *
  * @author Douglas Myers-Turnbull
- * @since 1.9.0
+ * @since 2.0.0
  * @see ConfigConverters for utilities to convert property values
  */
 public class ConfigMap {
@@ -223,6 +223,33 @@ public class ConfigMap {
         return getList(field, Long::parseLong, defaults).stream().mapToLong(Long::valueOf).toArray();
     }
 
+    public String[] getStrArray(String field) {
+        return getStrList(field).toArray(String[]::new);
+    }
+
+    public String[] getStrArray(String field, String[] defaultValue) {
+        if (defaultValue == null) {
+            return getStrList(field).toArray(String[]::new);
+        }
+        return getStrList(field, Arrays.asList(defaultValue)).toArray(String[]::new);
+    }
+
+    /**
+     * Loads a string list, throwing a {@link ConfigKeyMissingException} if it is not provided.
+     * @see #getList(String, Function, List).
+     */
+    public List<String> getStrList(String field) {
+        return getList(field, String::valueOf, null);
+    }
+
+    /**
+     * Loads a string list, falling back to {@code defaultValue}.
+     * @see #getList(String, Function, List).
+     */
+    public List<String> getStrList(String field, List<String> defaultValue) {
+        return getList(field, String::valueOf, defaultValue);
+    }
+
     /**
      * Loads a list, throwing a {@link ConfigKeyMissingException} if it is not provided.
      * @see #getList(String, Function, List).
@@ -257,7 +284,7 @@ public class ConfigMap {
         return loadProp(field, fn, defaultValue, "csv list");
     }
 
-    public Map<String, String> getProperties() {
+    public Map<String, String> rawMap() {
         return Collections.unmodifiableMap(props);
     }
 

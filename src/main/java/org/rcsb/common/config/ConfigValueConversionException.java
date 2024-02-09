@@ -4,7 +4,7 @@ package org.rcsb.common.config;
  * An exception thrown when {@link ConfigMap#get} could not convert the property value to the requested type.
  *
  * @author Douglas Myers-Turnbull
- * @since 1.9.0
+ * @since 2.0.0
  */
 public class ConfigValueConversionException extends ConfigException {
 

@@ -19,7 +19,7 @@ import java.util.stream.Stream;
  * These are meant to be passed as {@code convert} in {@link ConfigMap#get}.
  *
  * @author Douglas Myers-Turnbull
- * @since 1.9.0
+ * @since 2.0.0
  */
 public final class ConfigConverters {
 

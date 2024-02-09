@@ -1,7 +1,9 @@
 package org.rcsb.common.config;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.List;
+import java.util.Objects;
 
 import org.junit.jupiter.api.Test;
 
@@ -9,7 +11,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Disabled;
 
 public class TestConfigStage {
-    // TODO migrate tests from TestPropertiesReader in 2.0 release
 
     private static final String file = "/test_config.properties";
 
@@ -18,7 +19,8 @@ public class TestConfigStage {
 
     @Test
     public void testBasicRead() throws IOException {
-        ConfigMap map = stage.read(getClass().getResource(file));
+        URL url = Objects.requireNonNull(getClass().getResource(file));
+        ConfigMap map = stage.read(url);
         assertEquals(10, map.size());
         assertIterableEquals(List.of(3.0, 4.0, 6.0, 7.0, 8.0, 13.0, 14.0, 17.0, 21.0, 22.0),
             map.getList("my.int.array.field", Double::parseDouble)
