@@ -1,7 +1,7 @@
 package org.rcsb.common.config;
 
 /**
- * An exception thrown when {@link ConfigMapImpl#get} could not convert the property value to the requested type.
+ * An exception thrown when {@link ConfigMapImpl#getLazy} could not convert the property value to the requested type.
  *
  * @author Douglas Myers-Turnbull
  * @since 2.0.0

@@ -14,12 +14,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-/**
- * A utility that finds and reads config profiles.
- *
- * @author Douglas Myers-Turnbull
- * @since 2.0.0
- */
 public class ConfigManagerImpl implements ConfigManager {
 
     private static final Logger logger = LoggerFactory.getLogger(ConfigManagerImpl.class);

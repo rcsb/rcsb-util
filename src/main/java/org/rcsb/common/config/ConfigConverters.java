@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 
 /**
  * A collection of static methods that convert string-typed property values to their correct types.
- * These are meant to be passed as {@code convert} in {@link ConfigMapImpl#get}.
+ * These are meant to be passed as {@code convert} in {@link ConfigMapImpl#getLazy}.
  *
  * @author Douglas Myers-Turnbull
  * @since 2.0.0
@@ -34,6 +34,51 @@ public final class ConfigConverters {
 
     public static <T> List<T> splitCsv(String value, Function<String, ? extends T> convert) {
         return Stream.of(csvPattern.split(value)).map(convert).collect(Collectors.toUnmodifiableList());
+    }
+
+    /**
+     * Converts to a {@link Path}, making sure that the path either does not exist or is a directory.
+     * (Prefer for output directories.)
+     * @throws UncheckedIOException If the directory exists and is not a directory
+     * @throws ConfigValueConversionException If the path is invalid (will have a InvalidPathException as its cause)
+     * @see #convertDirectory(String): The directory must exist (prefer for input directories)
+     */
+    public static Path convertDirectory(String value) {
+        try {
+            Path path = Paths.get(value);
+            if (Files.exists(path) && !Files.isDirectory(path)) {
+                throw new FileNotFoundException("Path '" + path + "' exists but is not a directory");
+            }
+            return path;
+        } catch (InvalidPathException e) {
+            throw new ConfigValueConversionException("Could not parse '" + value + "' as a directory", e);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    /**
+     * Converts to a {@link Path}, making sure that the path exists and is a directory.
+     * (Prefer for input directories.)
+     * @throws UncheckedIOException If the directory is not found or not a directory
+     * @throws ConfigValueConversionException If the path is invalid (will have a InvalidPathException as its cause)
+     * @see #convertDirectory(String): The path can also not exist (prefer for output directories)
+     */
+    public static Path convertExtantDirectory(String value) {
+        try {
+            Path path = Paths.get(value);
+            if (!Files.exists(path)) {
+                throw new FileNotFoundException("Path '" + path + "' does not exist");
+            }
+            if (!Files.isDirectory(path)) {
+                throw new FileNotFoundException("Path '" + path + "' exists but is not a directory");
+            }
+            return path;
+        } catch (InvalidPathException e) {
+            throw new ConfigValueConversionException("Could not parse '" + value + "' as a directory", e);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 
     /**
@@ -115,4 +160,5 @@ public final class ConfigConverters {
             throw new ConfigValueConversionException("Could not parse '" + value + "' as a path", e);
         }
     }
+
 }

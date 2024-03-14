@@ -3,6 +3,12 @@ package org.rcsb.common.config;
 import java.net.URL;
 import java.nio.file.Path;
 
+/**
+ * A utility that finds and reads config profiles.
+ *
+ * @author Douglas Myers-Turnbull
+ * @since 2.0.0
+ */
 public interface ConfigManager {
 
     /**

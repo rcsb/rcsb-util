@@ -1,0 +1,24 @@
+Configuration:
+  status: ERROR
+  Appenders:
+    Console:
+      name: console
+      target: SYSTEM_OUT
+      PatternLayout:
+        pattern: "
+        %highlight{
+        %date{yyyy-MM-dd HH:mm:ss.SSSXXX}
+        [%03threadId{***}]
+        %-5level
+        %logger{1.3.} -
+        %msg\
+        }{FATAL=#800000,ERROR=#800000, WARN=#806000, INFO=#000050, DEBUG=#101010, TRACE=#808080}\
+        %n"
+  Loggers:
+    Root:
+      level: INFO
+      AppenderRef:
+        ref: console
+    Logger:
+      - name: "org.rcsb"
+        level: INFO
