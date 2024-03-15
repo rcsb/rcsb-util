@@ -20,7 +20,7 @@ public class ConfigManagerImpl implements ConfigManager {
 
     @Override
     public ConfigMap read(String urlOrPath) {
-        if (urlOrPath.startsWith("https://")) {
+        if (urlOrPath.startsWith("https://") || urlOrPath.startsWith("file://")) {
             // convert to a URL
             return read(validate(urlOrPath));
         }
