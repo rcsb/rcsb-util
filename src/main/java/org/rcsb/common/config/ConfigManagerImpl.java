@@ -24,7 +24,7 @@ public class ConfigManagerImpl implements ConfigManager {
         try {
             if (where.contains(":")) {
                 url = new URL(where);
-                if (Set.of("https", "http", "file").contains(url.getProtocol())) {
+                if (!Set.of("https", "http", "file").contains(url.getProtocol())) {
                     throw new ConfigProfileException(String.format("Unsupported protocol for config URL '%s'", where));
                 }
             } else {
