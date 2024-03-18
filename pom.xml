@@ -9,7 +9,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.targetEncoding>UTF-8</project.build.targetEncoding>
-        <jdk.version>11</jdk.version>
+        <jdk.version>17</jdk.version>
         <slf4j.version>2.0.9</slf4j.version>
         <log4j.version>2.22.0</log4j.version>
         <junit.version>5.10.1</junit.version>
@@ -37,16 +37,20 @@
     <dependencies>
 
         <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+
+        <!-- ************************************************* -->
+        <!--  Test scope follows, which includes log4j.        -->
+        <!-- ************************************************* -->
+
+        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <version>${junit.version}</version>
             <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
         </dependency>
 
         <!-- Binding for Log4J -->
