@@ -47,11 +47,11 @@ public final class ConfigConverters {
         try {
             Path path = Paths.get(value);
             if (Files.exists(path) && !Files.isDirectory(path)) {
-                throw new FileNotFoundException("Path '" + path + "' exists but is not a directory");
+                throw new FileNotFoundException(String.format("Path '%s' exists but is not a directory.", value));
             }
             return path;
         } catch (InvalidPathException e) {
-            throw new ConfigValueConversionException("Could not parse '" + value + "' as a directory", e);
+            throw new ConfigValueConversionException(String.format("Could not parse '%s' as a path.", value), e);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -68,14 +68,14 @@ public final class ConfigConverters {
         try {
             Path path = Paths.get(value);
             if (!Files.exists(path)) {
-                throw new FileNotFoundException("Path '" + path + "' does not exist");
+                throw new FileNotFoundException(String.format("Path '%s' does not exist.", value));
             }
             if (!Files.isDirectory(path)) {
-                throw new FileNotFoundException("Path '" + path + "' exists but is not a directory");
+                throw new FileNotFoundException(String.format("Path '%s' exists but is not a directory.", value));
             }
             return path;
         } catch (InvalidPathException e) {
-            throw new ConfigValueConversionException("Could not parse '" + value + "' as a directory", e);
+            throw new ConfigValueConversionException(String.format("Could not parse '%s' as a path.", value), e);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -90,17 +90,17 @@ public final class ConfigConverters {
         try {
             Path path = Paths.get(value);
             if (!Files.exists(path)) {
-                throw new FileNotFoundException("File '" + path + "' does not exist");
+                throw new FileNotFoundException(String.format("Path '%s' does not exist.", value));
             }
             if (!Files.isRegularFile(path)) {
-                throw new FileNotFoundException("File '" + path + "' exists but is not a regular file");
+                throw new FileNotFoundException(String.format("Path '%s' exists but is not a regular file.", value));
             }
             if (!Files.isReadable(path)) {
-                throw new FileSystemException("File '" + path + "' exists but is not readable");
+                throw new FileSystemException(String.format("Path '%s' is not readable.", value));
             }
             return path;
         } catch (InvalidPathException e) {
-            throw new ConfigValueConversionException("Could not parse '" + value + "' as a file", e);
+            throw new ConfigValueConversionException(String.format("Could not parse '%s' as a file.", value), e);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -115,11 +115,11 @@ public final class ConfigConverters {
         try {
             Path path = Paths.get(value);
             if (Files.exists(path)) {
-                throw new FileAlreadyExistsException("Path '" + path + "' already exists");
+                throw new FileAlreadyExistsException(String.format("Path '%s' already exists.", value));
             }
             return path;
         } catch (InvalidPathException e) {
-            throw new ConfigValueConversionException("Could not parse '" + value + "' as a file", e);
+            throw new ConfigValueConversionException(String.format("Could not parse '%s' as a file.", value), e);
         } catch (FileSystemException e) {
             throw new UncheckedIOException(e);
         }
@@ -133,7 +133,7 @@ public final class ConfigConverters {
         try {
             return new URI(value);
         } catch (URISyntaxException e) {
-            throw new ConfigValueConversionException("Could not parse '" + value + "' as URI", e);
+            throw new ConfigValueConversionException(String.format("Could not parse '%s' as URI.", value), e);
         }
     }
 
@@ -145,7 +145,7 @@ public final class ConfigConverters {
         try {
             return new URL(value);
         } catch (MalformedURLException e) {
-            throw new ConfigValueConversionException("Could not parse '" + value + "' as URI", e);
+            throw new ConfigValueConversionException(String.format("Could not parse '%s' as URL.", value), e);
         }
     }
 
@@ -157,7 +157,7 @@ public final class ConfigConverters {
         try {
             return Paths.get(value);
         } catch (InvalidPathException e) {
-            throw new ConfigValueConversionException("Could not parse '" + value + "' as a path", e);
+            throw new ConfigValueConversionException(String.format("Could not parse '%s' as path.", value), e);
         }
     }
 

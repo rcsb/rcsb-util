@@ -33,10 +33,4 @@ public interface ConfigManager {
      */
     ConfigMap read(URL url);
 
-    /**
-     * Converts a profile URL string into a URL, checking that it can contact the URL by HTTP or file access.
-     *
-     * @throws ConfigProfileException If the URL is invalid or inaccessible/unreadable
-     */
-    URL validate(String profile);
 }

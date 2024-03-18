@@ -383,7 +383,7 @@ public class ConfigMapImpl implements ConfigMap {
                 finalValue = convert.apply(value);
             } catch (RuntimeException e) {
                 throw new ConfigValueConversionException(
-                    "Could not parse " + typeName + " value '" + value + "' from property " + field + ".", e
+                    String.format("Could not parse %s value '%s' from property %s.", typeName, value, field), e
                 );
             }
             logger.info("Setting property {} to '{}'.", field, value);
@@ -396,7 +396,7 @@ public class ConfigMapImpl implements ConfigMap {
             return fellBack;
         }
         // option 3: uh-oh, there is no default either
-        throw new ConfigKeyMissingException("Missing property " + field);
+        throw new ConfigKeyMissingException(String.format("Missing property %s.", field));
     }
 
 }

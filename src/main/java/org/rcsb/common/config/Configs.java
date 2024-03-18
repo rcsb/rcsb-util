@@ -5,8 +5,7 @@ import java.util.Map;
 
 public final class Configs {
 
-    private Configs() {
-    }
+    private Configs() {}
 
     public static ConfigManager manager() {
         return new ConfigManagerImpl();
