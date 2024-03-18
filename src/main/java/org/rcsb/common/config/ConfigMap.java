@@ -89,9 +89,19 @@ public interface ConfigMap {
     Path getExtantFile(String field, Path fallback);
 
     /**
+     * @see ConfigConverters#convertExtantFile(String)
+     */
+    Optional<Path> getOptionalExtantFile(String field);
+
+    /**
      * @see ConfigConverters#convertNonextantPath(String)
      */
     Path getNonextantPath(String field);
+
+    /**
+     * @see ConfigConverters#convertNonextantPath(String)
+     */
+    Optional<Path> getOptionalNonextantFile(String field);
 
     /**
      * @see ConfigConverters#convertNonextantPath(String)
@@ -106,7 +116,17 @@ public interface ConfigMap {
     /**
      * @see ConfigConverters#convertDirectory(String)
      */
+    Optional<Path> getOptionalDirectory(String field);
+
+    /**
+     * @see ConfigConverters#convertDirectory(String)
+     */
     Path getDirectory(String field, Path fallback);
+
+    /**
+     * @see ConfigConverters#convertExtantDirectory(String)
+     */
+    Optional<Path> getOptionalExtantDirectory(String field);
 
     /**
      * @see ConfigConverters#convertExtantDirectory(String)
@@ -158,7 +178,7 @@ public interface ConfigMap {
 
     String getStr(String field);
 
-    Optional<String> getOptionalString(String field);
+    Optional<String> getOptionalStr(String field);
 
     String getStr(String field, String defaultValue);
 

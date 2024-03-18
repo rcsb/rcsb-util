@@ -1,7 +1,6 @@
 package org.rcsb.common.config;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -25,8 +24,7 @@ public final class ConfigConverters {
 
     private static final Pattern csvPattern = Pattern.compile(",\\s*");
 
-    private ConfigConverters() {
-    }
+    private ConfigConverters() {}
 
     public static List<String> splitCsv(String value) {
         return List.of(csvPattern.split(value));
@@ -47,13 +45,11 @@ public final class ConfigConverters {
         try {
             Path path = Paths.get(value);
             if (Files.exists(path) && !Files.isDirectory(path)) {
-                throw new FileNotFoundException(String.format("Path '%s' exists but is not a directory.", value));
+                throw fnfe("Path '%s' exists but is not a directory.", value);
             }
             return path;
         } catch (InvalidPathException e) {
-            throw new ConfigValueConversionException(String.format("Could not parse '%s' as a path.", value), e);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
+            throw cvce("Could not parse '%s' as a path.", value, e);
         }
     }
 
@@ -65,20 +61,11 @@ public final class ConfigConverters {
      * @see #convertDirectory(String): The path can also not exist (prefer for output directories)
      */
     public static Path convertExtantDirectory(String value) {
-        try {
-            Path path = Paths.get(value);
-            if (!Files.exists(path)) {
-                throw new FileNotFoundException(String.format("Path '%s' does not exist.", value));
-            }
-            if (!Files.isDirectory(path)) {
-                throw new FileNotFoundException(String.format("Path '%s' exists but is not a directory.", value));
-            }
-            return path;
-        } catch (InvalidPathException e) {
-            throw new ConfigValueConversionException(String.format("Could not parse '%s' as a path.", value), e);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
+        Path path = convertDirectory(value);
+        if (!Files.isDirectory(path)) {
+            throw fnfe("Path '%s' exists but is not a directory.", value);
         }
+        return path;
     }
 
     /**
@@ -87,23 +74,17 @@ public final class ConfigConverters {
      * @throws ConfigValueConversionException If the path is invalid (will have a InvalidPathException as its cause)
      */
     public static Path convertExtantFile(String value) {
-        try {
-            Path path = Paths.get(value);
-            if (!Files.exists(path)) {
-                throw new FileNotFoundException(String.format("Path '%s' does not exist.", value));
-            }
-            if (!Files.isRegularFile(path)) {
-                throw new FileNotFoundException(String.format("Path '%s' exists but is not a regular file.", value));
-            }
-            if (!Files.isReadable(path)) {
-                throw new FileSystemException(String.format("Path '%s' is not readable.", value));
-            }
-            return path;
-        } catch (InvalidPathException e) {
-            throw new ConfigValueConversionException(String.format("Could not parse '%s' as a file.", value), e);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
+        Path path = convertPath(value);
+        if (!Files.exists(path)) {
+            throw fnfe("Path '%s' does not exist.", value);
         }
+        if (!Files.isRegularFile(path)) {
+            throw fnfe("Path '%s' exists but is not a regular file.", value);
+        }
+        if (!Files.isReadable(path)) {
+            throw fse("Path '%s' is not readable.", value);
+        }
+        return path;
     }
 
     /**
@@ -115,37 +96,11 @@ public final class ConfigConverters {
         try {
             Path path = Paths.get(value);
             if (Files.exists(path)) {
-                throw new FileAlreadyExistsException(String.format("Path '%s' already exists.", value));
+                throw faee("Path '%s' already exists.", value);
             }
             return path;
         } catch (InvalidPathException e) {
-            throw new ConfigValueConversionException(String.format("Could not parse '%s' as a file.", value), e);
-        } catch (FileSystemException e) {
-            throw new UncheckedIOException(e);
-        }
-    }
-
-    /**
-     * Converts to a URI.
-     * @throws ConfigValueConversionException If the URI is invalid (has a URISyntaxException as its cause)
-     */
-    public static URI convertUri(String value) {
-        try {
-            return new URI(value);
-        } catch (URISyntaxException e) {
-            throw new ConfigValueConversionException(String.format("Could not parse '%s' as URI.", value), e);
-        }
-    }
-
-    /**
-     * Converts to a URL.
-     * @throws ConfigValueConversionException If the URL is invalid (has a MalformedURLException as its cause)
-     */
-    public static URL convertUrl(String value) {
-        try {
-            return new URL(value);
-        } catch (MalformedURLException e) {
-            throw new ConfigValueConversionException(String.format("Could not parse '%s' as URL.", value), e);
+            throw cvce("Could not parse '%s' as a path.", value, e);
         }
     }
 
@@ -157,8 +112,48 @@ public final class ConfigConverters {
         try {
             return Paths.get(value);
         } catch (InvalidPathException e) {
-            throw new ConfigValueConversionException(String.format("Could not parse '%s' as path.", value), e);
+            throw cvce("Could not parse '%s' as a path.", value, e);
         }
+    }
+
+    /**
+     * Converts to a URI.
+     * @throws ConfigValueConversionException If the URI is invalid (has a URISyntaxException as its cause)
+     */
+    public static URI convertUri(String value) {
+        try {
+            return new URI(value);
+        } catch (URISyntaxException e) {
+            throw cvce("Could not parse '%s' as a URI.", value, e);
+        }
+    }
+
+    /**
+     * Converts to a URL.
+     * @throws ConfigValueConversionException If the URL is invalid (has a MalformedURLException as its cause)
+     */
+    public static URL convertUrl(String value) {
+        try {
+            return new URL(value);
+        } catch (MalformedURLException e) {
+            throw cvce("Could not parse '%s' as a URL.", value, e);
+        }
+    }
+
+    private static UncheckedIOException fnfe(String msg, String value) {
+        return new UncheckedIOException(new FileNotFoundException(String.format(msg, value)));
+    }
+
+    private static UncheckedIOException faee(String msg, String value) {
+        return new UncheckedIOException(new FileAlreadyExistsException(String.format(msg, value)));
+    }
+
+    private static UncheckedIOException fse(String msg, String value) {
+        return new UncheckedIOException(new FileSystemException(String.format(msg, value)));
+    }
+
+    private static ConfigValueConversionException cvce(String msg, String value, Exception e) {
+        return new ConfigValueConversionException(String.format(msg, value), e);
     }
 
 }

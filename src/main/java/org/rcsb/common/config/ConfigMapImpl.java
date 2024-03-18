@@ -76,8 +76,18 @@ public class ConfigMapImpl implements ConfigMap {
     }
 
     @Override
+    public Optional<Path> getOptionalExtantFile(String field) {
+        return Optional.ofNullable(getLazy(field, ConfigConverters::convertExtantFile, () -> null));
+    }
+
+    @Override
     public Path getNonextantPath(String field) {
         return get(field, ConfigConverters::convertNonextantPath);
+    }
+
+    @Override
+    public Optional<Path> getOptionalNonextantFile(String field) {
+        return Optional.ofNullable(getLazy(field, ConfigConverters::convertNonextantPath, () -> null));
     }
 
     @Override
@@ -91,8 +101,18 @@ public class ConfigMapImpl implements ConfigMap {
     }
 
     @Override
+    public Optional<Path> getOptionalDirectory(String field) {
+        return Optional.ofNullable(getLazy(field, ConfigConverters::convertDirectory, () -> null));
+    }
+
+    @Override
     public Path getDirectory(String field, Path fallback) {
         return get(field, ConfigConverters::convertDirectory, fallback);
+    }
+
+    @Override
+    public Optional<Path> getOptionalExtantDirectory(String field) {
+        return Optional.ofNullable(getLazy(field, ConfigConverters::convertExtantDirectory, () -> null));
     }
 
     @Override
@@ -191,7 +211,7 @@ public class ConfigMapImpl implements ConfigMap {
     }
 
     @Override
-    public Optional<String> getOptionalString(String field) {
+    public Optional<String> getOptionalStr(String field) {
         return Optional.ofNullable(getLazy(field, String::valueOf, () -> null));
     }
 
