@@ -6,14 +6,29 @@ import org.slf4j.LoggerFactory;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
-import java.util.stream.*;
+import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 
+/**
+ * {@link Map}-backed {@link ConfigMap} implementation.
+ *
+ * @author Douglas Myers-Turnbull
+ * @since 2.0.0
+ */
 public class ConfigMapImpl implements ConfigMap {
 
     private static final Logger logger = LoggerFactory.getLogger(ConfigMapImpl.class);

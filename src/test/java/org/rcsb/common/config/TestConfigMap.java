@@ -1,10 +1,9 @@
 package org.rcsb.common.config;
 
+import org.junit.jupiter.api.*;
+
 import java.io.IOException;
 import java.util.Properties;
-
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 

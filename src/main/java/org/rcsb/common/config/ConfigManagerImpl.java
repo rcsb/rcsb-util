@@ -1,31 +1,43 @@
 package org.rcsb.common.config;
 
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.*;
-import java.net.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
+/**
+ * {@link ConfigManager} implementation that supports http/https and file paths.
+ *
+ * @author Douglas Myers-Turnbull
+ * @since 2.0.0
+ */
 public class ConfigManagerImpl implements ConfigManager {
 
     @Override
     public ConfigMap read(String where) {
+        if (where == null) {
+            throw new ConfigProfileException("Config URL/path is null.");
+        }
+        if (where.isBlank()) {
+            throw new ConfigProfileException("Config URL/path is blank.");
+        }
         final URL url;
         try {
             if (where.contains(":")) {
                 url = new URL(where);
                 if (!Set.of("https", "http", "file").contains(url.getProtocol())) {
-                    throw new ConfigProfileException(String.format("Unsupported protocol for config URL '%s'", where));
+                    throw new ConfigProfileException(String.format("Unsupported protocol for config URL '%s'.", where));
                 }
             } else {
                 url = pathToUrl(Paths.get(where));
@@ -50,14 +62,13 @@ public class ConfigManagerImpl implements ConfigManager {
                     props.load(stream);
                 }
             } else {
-                var connection = (HttpURLConnection) url.openConnection();
-                int code = connection.getResponseCode();
+                var conn = (HttpURLConnection) url.openConnection();
+                int code = conn.getResponseCode();
                 if (code != 200) {
                     throw new ConfigProfileException(String.format("Status code %d from config URL '%s'.", code, url));
                 }
                 try (
-                    var br =
-                        new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))
+                    var br = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))
                 ) {
                     String body = br.lines().collect(Collectors.joining());
                     props.load(new StringReader(body));
@@ -80,7 +91,7 @@ public class ConfigManagerImpl implements ConfigManager {
         try {
             return path.toUri().toURL();
         } catch (MalformedURLException e) {
-            throw new ConfigProfileException(String.format("Could not convert path '%s' to URL", path), e);
+            throw new ConfigProfileException(String.format("Could not convert path '%s' to URL.", path), e);
         }
     }
 
