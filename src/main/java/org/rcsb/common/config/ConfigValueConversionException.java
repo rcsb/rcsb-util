@@ -6,7 +6,7 @@ package org.rcsb.common.config;
  * @author Douglas Myers-Turnbull
  * @since 2.0.0
  */
-public class ConfigValueConversionException extends ConfigException {
+public class ConfigValueConversionException extends RuntimeException implements ConfigException {
 
     public ConfigValueConversionException(String message) {
         super(message);

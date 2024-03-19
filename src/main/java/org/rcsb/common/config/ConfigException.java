@@ -6,17 +6,7 @@ package org.rcsb.common.config;
  * @author Douglas Myers-Turnbull
  * @since 2.0.0
  */
-public abstract class ConfigException extends RuntimeException {
+@SuppressWarnings("NonExceptionNameEndsWithException")
+public interface ConfigException {
 
-    protected ConfigException(String message) {
-        super(message);
-    }
-
-    protected ConfigException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    protected ConfigException(Throwable cause) {
-        super(cause);
-    }
 }
