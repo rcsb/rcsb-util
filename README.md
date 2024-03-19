@@ -45,6 +45,9 @@ public final class ConfigSingleton {
             config.getExtantFile("project.data-file", "/var/lib/data.xml"),
             config.getUrl("project.resource-url"),
             config.getStrSet("project.keys"),
+            config.getOptionalStr("project.xx"),  // Optional<String>
+            config.getLazy("project.yy", Path::of), // convert manually
+            config.getLazy("project.zz", Path::of, () -> null), // use a Supplier
             config.getDoubleArray("project.coeffs", new double[]{1.0}),
             config.subsetByKeyPrefix("project.extras").rawMap()
         );
@@ -65,7 +68,7 @@ public class CacheHandler {
         var props = Configs.mapOf(data);
         try {
             return props.getBool("use-cached", false);
-        } catch (ConfigValueConversionException e) {
+        } catch (ConfigValueConversionException ignored) {
             // e.g., 'falsee' -- no worries, we'll rebuild
             // logger.warn();
             return false;

@@ -1,21 +1,23 @@
 package org.rcsb.common.config;
 
+import org.junit.jupiter.api.*;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.Objects;
 
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Disabled;
 
 public class TestConfigManager {
 
     private static final String file = "/test_config.properties";
+    private static ConfigManager stage;
 
-    private static final ConfigManager stage = new ConfigManagerImpl();
-
+    @BeforeAll
+    public static void setUp() {
+        stage = new ConfigManagerImpl();
+    }
 
     @Test
     public void testBasicRead() throws IOException {
@@ -46,4 +48,5 @@ public class TestConfigManager {
         ConfigMap map = stage.read("https://google.com");
         System.out.println(map);
     }
+
 }

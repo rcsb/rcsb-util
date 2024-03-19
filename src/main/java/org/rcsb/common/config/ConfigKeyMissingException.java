@@ -6,7 +6,7 @@ package org.rcsb.common.config;
  * @author Douglas Myers-Turnbull
  * @since 2.0.0
  */
-public class ConfigKeyMissingException extends ConfigException {
+public class ConfigKeyMissingException extends RuntimeException implements ConfigException {
 
     public ConfigKeyMissingException(String message) {
         super(message);

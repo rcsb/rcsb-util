@@ -3,6 +3,12 @@ package org.rcsb.common.config;
 import java.net.URL;
 import java.nio.file.Path;
 
+/**
+ * A utility that finds and reads config profiles.
+ *
+ * @author Douglas Myers-Turnbull
+ * @since 2.0.0
+ */
 public interface ConfigManager {
 
     /**
@@ -27,10 +33,4 @@ public interface ConfigManager {
      */
     ConfigMap read(URL url);
 
-    /**
-     * Converts a profile URL string into a URL, checking that it can contact the URL by HTTP or file access.
-     *
-     * @throws ConfigProfileException If the URL is invalid or inaccessible/unreadable
-     */
-    URL validate(String profile);
 }

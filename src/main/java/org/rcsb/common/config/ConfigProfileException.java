@@ -6,7 +6,7 @@ package org.rcsb.common.config;
  * @author Douglas Myers-Turnbull
  * @since 2.0.0
  */
-public class ConfigProfileException extends ConfigException {
+public class ConfigProfileException extends RuntimeException implements ConfigException {
 
     public ConfigProfileException(String message) {
         super(message);
