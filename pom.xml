@@ -13,8 +13,6 @@
         <slf4j.version>2.0.9</slf4j.version>
         <log4j.version>2.22.0</log4j.version>
         <junit.version>5.10.1</junit.version>
-        <!-- This is for the release plugin not to generate backup poms (annoying behaviour if you have git) -->
-        <generateBackupPoms>false</generateBackupPoms>
     </properties>
 
     <!-- https://central.sonatype.org/pages/apache-maven.html -->
