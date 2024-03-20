@@ -167,6 +167,11 @@
                                 </goals>
                             </execution>
                         </executions>
+                        <configuration>
+                            <!-- so that javadoc generator is not so strict about missing docs -->
+                            <!-- https://stackoverflow.com/questions/15886209/maven-is-not-working-in-java-8-when-javadoc-tags-are-incomplete -->
+                            <doclint>none</doclint>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
