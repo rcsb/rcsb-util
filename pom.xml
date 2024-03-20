@@ -1,11 +1,13 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.rcsb</groupId>
     <artifactId>rcsb-util</artifactId>
     <packaging>jar</packaging>
     <name>RCSB utils</name>
-    <version>1.8.0</version>
+    <version>1.8.1-SNAPSHOT</version>
+    <description>Provides configuration management via .properties files.</description>
+    <url>https://github.com/rcsb/rcsb-util</url>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.targetEncoding>UTF-8</project.build.targetEncoding>
@@ -15,24 +17,58 @@
         <junit.version>4.13.2</junit.version>
     </properties>
 
+    <!-- https://central.sonatype.org/pages/apache-maven.html -->
+    <!-- https://github.com/chhh/sonatype-ossrh-parent/blob/master/pom.xml -->
     <distributionManagement>
-        <downloadUrl>http://nexus3.rcsb.org/repository/rcsb-super-proxy/</downloadUrl>
-        <repository>
-            <id>releases</id>
-            <name>RCSB PDB Maven Repository</name>
-            <url>http://nexus3.rcsb.org/repository/maven-releases/</url>
-        </repository>
         <snapshotRepository>
-            <id>snapshots</id>
-            <url>http://nexus3.rcsb.org/repository/maven-snapshots/</url>
-            <uniqueVersion>false</uniqueVersion>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
     </distributionManagement>
+
+    <organization>
+        <name>RCSB PDB</name>
+        <url>https://www.rcsb.org/</url>
+    </organization>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://opensource.org/license/mit/</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Douglas Myers-Turnbull</name>
+            <email>douglas.myers-turnbull@rcsb.org</email>
+            <organization>RCSB PDB</organization>
+            <organizationUrl>https://www.rcsb.org</organizationUrl>
+        </developer>
+        <developer>
+            <name>Jose M Duarte</name>
+            <email>jose.duarte@rcsb.org</email>
+            <organization>RCSB PDB</organization>
+            <organizationUrl>https://www.rcsb.org</organizationUrl>
+        </developer>
+        <developer>
+            <name>Yana Rose</name>
+            <email>yana.rose@rcsb.org</email>
+            <organization>RCSB PDB</organization>
+            <organizationUrl>https://www.rcsb.org</organizationUrl>
+        </developer>
+    </developers>
 
     <scm>
         <url>https://github.com/rcsb/rcsb-util</url>
         <connection>scm:git:git://github.com/rcsb/rcsb-util.git</connection>
-    </scm>
+        <developerConnection>scm:git:git@github.com:rcsb/rcsb-util.git</developerConnection>
+      <tag>HEAD</tag>
+  </scm>
 
     <dependencies>
 
@@ -78,13 +114,101 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.7.0</version>
+                <version>3.11.0</version>
                 <configuration>
                     <source>${jdk.version}</source>
                     <target>${jdk.version}</target>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>3.0.1</version>
+            </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <!-- A profile only to be used when releasing-->
+            <id>release</id>
+            <build>
+                <plugins>
+                    <!-- handles propagating the build to the staging repository -->
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <version>1.6.13</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <serverId>ossrh</serverId>
+                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                        </configuration>
+                    </plugin>
+
+                    <!-- signing of content to be published -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                                <configuration>
+                                    <!-- This is necessary for gpg to not try to use the pinentry programs -->
+                                    <gpgArguments>
+                                        <arg>--pinentry-mode</arg>
+                                        <arg>loopback</arg>
+                                    </gpgArguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- create source -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>3.3.0</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- create javadoc -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>3.6.3</version>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <!-- so that javadoc generator is not so strict about missing docs -->
+                            <!-- https://stackoverflow.com/questions/15886209/maven-is-not-working-in-java-8-when-javadoc-tags-are-incomplete -->
+                            <doclint>none</doclint>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
 </project>
