@@ -30,6 +30,7 @@
     <scm>
         <url>https://github.com/rcsb/rcsb-util</url>
         <connection>scm:git:git://github.com/rcsb/rcsb-util.git</connection>
+        <developerConnection>scm:git:git@github.com:rcsb/rcsb-util.git</developerConnection>
     </scm>
 
     <dependencies>
