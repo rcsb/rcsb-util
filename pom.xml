@@ -4,7 +4,7 @@
     <artifactId>rcsb-util</artifactId>
     <packaging>jar</packaging>
     <name>RCSB utils</name>
-    <version>1.8.2-SNAPSHOT</version>
+    <version>1.8.2</version>
     <description>Provides configuration management via .properties files.</description>
     <url>https://github.com/rcsb/rcsb-util</url>
 
@@ -67,7 +67,7 @@
         <url>https://github.com/rcsb/rcsb-util</url>
         <connection>scm:git:git://github.com/rcsb/rcsb-util.git</connection>
         <developerConnection>scm:git:git@github.com:rcsb/rcsb-util.git</developerConnection>
-      <tag>HEAD</tag>
+      <tag>1.8.2</tag>
   </scm>
 
     <dependencies>
